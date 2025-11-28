@@ -24,6 +24,15 @@ const validInvokeChannels = [
   'system:getModuleStates',
   'system:getVersion',
   'system:getPlatform',
+  'system:logError',
+  'system:getErrors',
+  'system:getHealth',
+  'system:runHealthCheck',
+  'system:getEventHistory',
+
+  // Module Lifecycle
+  'module:switch',
+  'module:getActive',
 
   // MediaLoader (GLOBAL)
   'media:getRandomImage',
@@ -108,6 +117,11 @@ const validSendChannels = [
 const validReceiveChannels = [
   // MediaLoader events
   'media:reload',
+
+  // Module lifecycle events
+  'module:switched',
+  'health:changed',
+  'error:logged',
 
   // Hotkey events
   'hotkey:kageChat',

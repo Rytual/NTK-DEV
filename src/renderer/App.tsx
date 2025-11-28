@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { TooltipProvider } from '../components/ui/Tooltip';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import { Sidebar, TopBar, StatusBar, ChatPanel } from '../components/layout';
+import ErrorBoundary from '../components/ErrorBoundary';
 
 // Lazy load modules
 const Dashboard = React.lazy(() => import('../pages/Dashboard'));
@@ -56,16 +57,16 @@ function AnimatedRoutes() {
       >
         <React.Suspense fallback={<PageLoader />}>
           <Routes location={location}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/ninjashark" element={<NinjaShark />} />
-            <Route path="/powershell" element={<PowerShell />} />
-            <Route path="/remote-access" element={<RemoteAccess />} />
-            <Route path="/network-map" element={<NetworkMap />} />
-            <Route path="/security" element={<Security />} />
-            <Route path="/azure" element={<Azure />} />
-            <Route path="/ai-manager" element={<AIManager />} />
-            <Route path="/ticketing" element={<Ticketing />} />
-            <Route path="/academy" element={<Academy />} />
+            <Route path="/" element={<ErrorBoundary moduleName="Dashboard"><Dashboard /></ErrorBoundary>} />
+            <Route path="/ninjashark" element={<ErrorBoundary moduleName="NinjaShark"><NinjaShark /></ErrorBoundary>} />
+            <Route path="/powershell" element={<ErrorBoundary moduleName="PowerShell"><PowerShell /></ErrorBoundary>} />
+            <Route path="/remote-access" element={<ErrorBoundary moduleName="RemoteAccess"><RemoteAccess /></ErrorBoundary>} />
+            <Route path="/network-map" element={<ErrorBoundary moduleName="NetworkMap"><NetworkMap /></ErrorBoundary>} />
+            <Route path="/security" element={<ErrorBoundary moduleName="Security"><Security /></ErrorBoundary>} />
+            <Route path="/azure" element={<ErrorBoundary moduleName="Azure"><Azure /></ErrorBoundary>} />
+            <Route path="/ai-manager" element={<ErrorBoundary moduleName="AIManager"><AIManager /></ErrorBoundary>} />
+            <Route path="/ticketing" element={<ErrorBoundary moduleName="Ticketing"><Ticketing /></ErrorBoundary>} />
+            <Route path="/academy" element={<ErrorBoundary moduleName="Academy"><Academy /></ErrorBoundary>} />
           </Routes>
         </React.Suspense>
       </motion.div>
@@ -132,12 +133,14 @@ function AppLayout() {
 // Root App component
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="dark">
-      <TooltipProvider delayDuration={300}>
-        <BrowserRouter>
-          <AppLayout />
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+    <ErrorBoundary moduleName="Application Root">
+      <ThemeProvider defaultTheme="dark">
+        <TooltipProvider delayDuration={300}>
+          <BrowserRouter>
+            <AppLayout />
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

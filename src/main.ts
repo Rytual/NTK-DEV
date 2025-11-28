@@ -48,6 +48,23 @@ const moduleStatus: Record<string, { loaded: boolean; error?: string }> = {
 // NATIVE MODULE LOADING WITH GRACEFUL FALLBACKS
 // ============================================================================
 
+// Load Event Bus (Enterprise integration system)
+let eventBusModule: any = null;
+let eventBus: any = null;
+let errorAggregator: any = null;
+let healthMonitor: any = null;
+let moduleLifecycle: any = null;
+try {
+  eventBusModule = require('./backend/eventBus.cjs');
+  eventBus = eventBusModule.eventBus;
+  errorAggregator = eventBusModule.errorAggregator;
+  healthMonitor = eventBusModule.healthMonitor;
+  moduleLifecycle = eventBusModule.moduleLifecycle;
+  console.log('[Main] Event bus loaded');
+} catch (error: any) {
+  console.warn('[Main] Event bus failed to load:', error.message);
+}
+
 // Load MediaLoader Bridge
 let mediaLoaderBridge: any = null;
 try {
@@ -223,6 +240,7 @@ function createWindow(): void {
       contextIsolation: true,
       nodeIntegration: false,
       webSecurity: true,
+      sandbox: false, // Required for preload script to access process APIs
     },
     title: 'Ninja Toolkit v11',
     show: false, // Show after ready
@@ -801,6 +819,84 @@ function registerIpcHandlers(): void {
     } catch (error: any) {
       return { success: false, error: error.message };
     }
+  });
+
+  // -------------------------------------------------------------------------
+  // Enterprise Integration Handlers (Event Bus, Health, Errors)
+  // -------------------------------------------------------------------------
+
+  // Log error from renderer
+  ipcMain.handle('system:logError', async (_event, errorData) => {
+    if (errorAggregator) {
+      errorAggregator.logError(errorData);
+    }
+    console.error('[System] Error logged:', errorData.module, errorData.message);
+    return { success: true };
+  });
+
+  // Get recent errors
+  ipcMain.handle('system:getErrors', async (_event, filter = {}, limit = 100) => {
+    if (!errorAggregator) {
+      return { errors: [], stats: null };
+    }
+    return {
+      errors: errorAggregator.getErrors(filter, limit),
+      stats: errorAggregator.getStats()
+    };
+  });
+
+  // Get system health status
+  ipcMain.handle('system:getHealth', async () => {
+    if (!healthMonitor) {
+      return { status: 'unknown', modules: {} };
+    }
+    return healthMonitor.getStatus();
+  });
+
+  // Run health checks
+  ipcMain.handle('system:runHealthCheck', async () => {
+    if (!healthMonitor) {
+      return { results: {}, error: 'Health monitor not available' };
+    }
+    try {
+      const results = await healthMonitor.runChecks();
+      return { results };
+    } catch (error: any) {
+      return { results: {}, error: error.message };
+    }
+  });
+
+  // Get event history (for debugging)
+  ipcMain.handle('system:getEventHistory', async (_event, filter = null, limit = 100) => {
+    if (!eventBus) {
+      return { events: [] };
+    }
+    return { events: eventBus.getHistory(filter, limit) };
+  });
+
+  // Module lifecycle - switch active module
+  ipcMain.handle('module:switch', async (_event, moduleName, context = {}) => {
+    if (moduleLifecycle) {
+      moduleLifecycle.switchModule(moduleName, context);
+    }
+
+    // Broadcast to renderer for KageChat context update
+    mainWindow?.webContents.send('module:switched', { module: moduleName, context });
+
+    // Publish to event bus
+    if (eventBus) {
+      eventBus.publish('module:switched', { module: moduleName, context });
+    }
+
+    return { success: true, module: moduleName };
+  });
+
+  // Get active module
+  ipcMain.handle('module:getActive', async () => {
+    if (!moduleLifecycle) {
+      return { module: null };
+    }
+    return { module: moduleLifecycle.getActiveModule() };
   });
 
   console.log('[Main] IPC handlers registered');
