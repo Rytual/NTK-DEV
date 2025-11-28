@@ -123,26 +123,33 @@ new FusesPlugin({...})
 
 ---
 
-### Entry 005 - UI Layout Issues (OPEN)
+### Entry 005 - UI Layout Issues (FIXED)
 **Date:** 2025-11-28
-**Time:** ~09:19 EST
+**Time:** ~09:19 EST (identified) / ~14:00 EST (fixed)
 
 **Issue:** UI renders but layout is broken
 - Sidebar items stacked vertically instead of contained
 - Main content area completely empty
 - Tailwind custom classes may not be loading
 
-**Root Cause Analysis (Pending):**
+**Root Cause Analysis:**
 1. Tailwind CSS v4 uses new import syntax `@import 'tailwindcss'`
-2. PostCSS may not be processing correctly with Vite
-3. Custom classes `bg-ninja-gray`, `border-shadow-gray` may not compile
+2. Tailwind v4 requires `@tailwindcss/postcss` package (not direct plugin)
+3. Tailwind v4 requires `@theme` block for custom CSS properties (OKLCH format)
+4. Old Tailwind v3 syntax (`tailwind.config.js` colors) not read by v4
 
-**Evidence:**
-- Screenshots show icons and text rendered but no layout structure
-- Performance indicator (MEM/SWAP) renders in top-left
-- Background color appears correct (dark)
+**Solution Applied:**
+1. Installed `@tailwindcss/postcss` package
+2. Updated `vite.renderer.config.mjs` to use `import tailwindcss from '@tailwindcss/postcss'`
+3. Rewrote `src/renderer/index.css` with `@theme` block using OKLCH colors
+4. Added `.dark` class overrides for dark theme
+5. Created new UI component library with Tailwind v4 syntax
+6. Created new layout components (Sidebar, TopBar, StatusBar, ChatPanel)
+7. Created 10 module page components
 
-**Status:** NOT FIXED - Requires debugging
+**Result:** ✅ FIXED - Application compiles and renders correctly
+
+**Commit:** `b428359` on `feature/ui-rebuild` branch
 
 ---
 
@@ -225,7 +232,7 @@ src/modules/kageforge/components/App.tsx(8,10): error TS2595: 'TokenTracker' can
 
 | # | Issue | Priority | Status |
 |---|-------|----------|--------|
-| 005 | UI Layout Issues | HIGH | OPEN |
+| 005 | UI Layout Issues | HIGH | ✅ FIXED |
 | 006 | IPC API Mismatch | HIGH | OPEN |
 | 007 | Backend Modules Not Bundled | HIGH | OPEN |
 | 008 | TypeScript Compilation Errors | MEDIUM | OPEN |
@@ -255,4 +262,4 @@ src/modules/kageforge/components/App.tsx(8,10): error TS2595: 'TokenTracker' can
 ---
 
 *Debugging journal for Ninja Toolkit v11*
-*Last updated: 2025-11-28*
+*Last updated: 2025-11-28 ~15:00 EST*
