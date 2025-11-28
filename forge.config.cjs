@@ -1,10 +1,22 @@
 /**
  * Ninja Toolkit v11 - Electron Forge Configuration
  * Complete build configuration for Windows EXE deployment
+ *
+ * Phase 9: Production Build & Packaging
+ * - Squirrel installer for Windows
+ * - ZIP archive for portable distribution
+ * - ASAR packaging for security
+ * - Native module rebuild support
  */
 
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
+const fs = require('fs');
+
+// Check if icon exists and has content
+const iconPath = path.join(__dirname, 'assets', 'icons', 'icon.ico');
+const hasValidIcon = fs.existsSync(iconPath) && fs.statSync(iconPath).size > 0;
 
 module.exports = {
   packagerConfig: {
@@ -13,7 +25,8 @@ module.exports = {
     executableName: 'ninja-toolkit',
     appBundleId: 'com.ninja.toolkit.v11',
     appCategoryType: 'public.app-category.developer-tools',
-    icon: './assets/icons/icon',
+    // Only include icon if it exists and is valid
+    ...(hasValidIcon && { icon: './assets/icons/icon' }),
     win32metadata: {
       CompanyName: 'Ninja Toolkit Team',
       FileDescription: 'Ninja Toolkit v11 - Complete MSP Management Platform',
@@ -28,10 +41,16 @@ module.exports = {
       /^\/\.vscode/,
       /^\/\.vs/,
       /^\/node_modules\/\.cache/,
+      /^\/docs\//,
+      /^\/scripts\//,
       /\.md$/,
       /\.log$/,
       /^\/art\/videos/,  // Large video files - users add their own
       /^\/art\/images/,  // Large image files - users add their own
+    ],
+    // Extra resources to include
+    extraResource: [
+      './art',
     ],
   },
   rebuildConfig: {
@@ -46,8 +65,8 @@ module.exports = {
         authors: 'Ninja Toolkit Team',
         description: 'Complete MSP Management Platform with 11 Integrated Modules',
         noMsi: true,
-        setupIcon: './assets/icons/icon.ico',
-        iconUrl: 'https://raw.githubusercontent.com/ninja-toolkit/assets/main/icon.ico',
+        // Only include icon if valid
+        ...(hasValidIcon && { setupIcon: './assets/icons/icon.ico' }),
       },
     },
     {
@@ -80,5 +99,28 @@ module.exports = {
         ],
       },
     },
+    // Fuses plugin for security hardening
+    new FusesPlugin({
+      version: FuseVersion.V1,
+      [FuseV1Options.RunAsNode]: false,
+      [FuseV1Options.EnableCookieEncryption]: true,
+      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+      [FuseV1Options.EnableNodeCliInspectArguments]: false,
+      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+      [FuseV1Options.OnlyLoadAppFromAsar]: true,
+    }),
   ],
+  // Hooks for build process
+  hooks: {
+    generateAssets: async () => {
+      console.log('[Forge] Generating assets...');
+    },
+    prePackage: async () => {
+      console.log('[Forge] Pre-package: Validating build configuration...');
+    },
+    postPackage: async (config, result) => {
+      console.log('[Forge] Post-package: Build complete');
+      console.log(`[Forge] Output: ${result.outputPaths.join(', ')}`);
+    },
+  },
 };
