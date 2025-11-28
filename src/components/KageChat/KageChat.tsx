@@ -137,10 +137,9 @@ const KageChat: React.FC<KageChatProps> = ({ collapsed, onToggle, context }) => 
     setMessages(prev => [...prev, userMessage]);
 
     try {
-      // Call Kage via IPC
-      const response: KageResponse = await window.electronAPI.invoke('kage-query', {
-        query,
-        context,
+      // Call Kage via IPC (using canonical channel name)
+      const response: KageResponse = await window.electronAPI.invoke('kage:sendMessage', query, {
+        ...context,
         sessionId: getSessionId()
       });
 

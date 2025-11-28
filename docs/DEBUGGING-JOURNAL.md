@@ -311,6 +311,53 @@ Complete review of all original specifications:
 
 **Result:** Understanding updated. Roadmap implications identified for all phases.
 
+**Commit:** `e6a7fe0` (Session 3 documentation)
+
+---
+
+### Entry 010 - IPC Bridge Alignment (Phase 2)
+**Date:** 2025-11-28
+**Time:** ~17:30 EST
+
+**Issue:** Mismatch between IPC API patterns causing runtime errors
+
+**Root Cause Analysis:**
+1. `preload.js` exposed: `window.electron.ipcRenderer`
+2. `KageChat.tsx` used: `window.electronAPI.invoke('kage-query', ...)` - MISMATCH
+3. `Academy module` defined its own narrow `window.electronAPI` type that conflicted with global types
+4. Channel name mismatch: `kage-query` vs `kage:sendMessage`
+
+**Solution Applied:**
+
+1. **Updated preload.js**
+   - Exposed canonical API: `window.electronAPI`
+   - Added legacy `window.electron` with deprecation warnings
+   - Expanded channel allowlist with Academy channels
+
+2. **Updated TypeScript definitions (src/types/global.d.ts)**
+   - Defined canonical `ElectronAPI` interface
+   - Added comprehensive IPC types (KageResponse, CaptureOptions, etc.)
+   - Marked legacy API as deprecated
+
+3. **Fixed KageChat.tsx**
+   - Changed `window.electronAPI.invoke('kage-query', {...})` to
+   - `window.electronAPI.invoke('kage:sendMessage', query, context)`
+
+4. **Fixed Splash.tsx**
+   - Changed `window.electron.ipcRenderer` to `window.electronAPI`
+   - Proper cleanup using returned unsubscribe function
+
+5. **Removed conflicting Academy types**
+   - Removed narrow `window.electronAPI` declaration from `src/modules/academy/types/index.d.ts`
+   - Added migration notes for Academy channel patterns
+
+6. **Created IPC Interface Specification**
+   - `docs/IPC-INTERFACE-SPECIFICATION.md`
+   - Comprehensive channel documentation
+   - Migration guide from legacy API
+
+**Result:** ✅ FIXED - IPC-related TypeScript errors resolved
+
 **Commit:** Pending (this session)
 
 ---
@@ -320,10 +367,11 @@ Complete review of all original specifications:
 | # | Issue | Priority | Status |
 |---|-------|----------|--------|
 | 005 | UI Layout Issues | HIGH | ✅ FIXED |
-| 006 | IPC API Mismatch | HIGH | OPEN |
+| 006 | IPC API Mismatch | HIGH | ✅ FIXED (Phase 2) |
 | 007 | Backend Modules Not Bundled | HIGH | OPEN |
-| 008 | TypeScript Compilation Errors | MEDIUM | OPEN |
+| 008 | TypeScript Compilation Errors | MEDIUM | OPEN (Pre-existing in modules) |
 | 009 | Native Modules Restoration | HIGH | OPEN (Documented) |
+| 010 | IPC Bridge Alignment | HIGH | ✅ FIXED (Phase 2) |
 
 ---
 
@@ -350,4 +398,4 @@ Complete review of all original specifications:
 ---
 
 *Debugging journal for Ninja Toolkit v11*
-*Last updated: 2025-11-28 ~17:00 EST*
+*Last updated: 2025-11-28 ~18:00 EST*

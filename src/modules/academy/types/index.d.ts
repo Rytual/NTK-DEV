@@ -304,33 +304,14 @@ export interface ProgressDisplayProps {
   compact?: boolean;
 }
 
-// IPC Types (for Electron)
-declare global {
-  interface Window {
-    electronAPI?: {
-      getExams: () => Promise<ExamInfo[]>;
-      getExamQuestions: (examCode: string) => Promise<Question[]>;
-      getRandomQuestions: (examCode: string, count: number) => Promise<Question[]>;
-      getUserProgress: () => Promise<UserProgress>;
-      getUserStats: () => Promise<UserStats>;
-      getProgressSummary: () => Promise<ProgressSummary>;
-      getAllBadges: () => Promise<Badge[]>;
-      recordAnswer: (questionId: string, correct: boolean, examCode: string) => Promise<UserStats>;
-      getExamStatistics: (examCode: string) => Promise<ExamStatistics>;
-      getStudyAnalytics: (days: number) => Promise<StudyAnalytics>;
-      startStudySession: (examCode: string) => Promise<number>;
-      endStudySession: (sessionId: number, questions: number, correct: number, xp: number) => Promise<void>;
-      saveNote: (examCode: string, domain: string, title: string, content: string) => Promise<number>;
-      getNotes: (examCode?: string) => Promise<Note[]>;
-      bookmarkQuestion: (questionId: string, examCode: string, note?: string) => Promise<boolean>;
-      getBookmarkedQuestions: (examCode?: string) => Promise<BookmarkedQuestion[]>;
-      getUserSettings: () => Promise<UserSettings>;
-      updateUserSettings: (settings: Partial<UserSettings>) => Promise<void>;
-      getRandomImage: () => Promise<MediaItem>;
-      getRandomVideo: () => Promise<MediaItem>;
-      exportUserData: () => Promise<ExportData>;
-    };
-  }
-}
+// NOTE: IPC types are defined in src/types/global.d.ts
+// Academy-specific channels use the canonical window.electronAPI interface:
+// - window.electronAPI.invoke('academy:getExams')
+// - window.electronAPI.invoke('academy:getRandomQuestions', examCode, count)
+// - window.electronAPI.invoke('academy:getUserStats')
+// - window.electronAPI.invoke('academy:getProgress')
+// - window.electronAPI.invoke('academy:getProgressSummary')
+// - window.electronAPI.invoke('academy:getAllBadges')
+// - window.electronAPI.invoke('academy:recordAnswer', questionId, correct, examCode)
 
 export {};

@@ -103,17 +103,18 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
     loadMediaFromGlobalLoader();
     startLoadingSequence();
 
-    // Listen for media reload events
-    if (window.electron?.ipcRenderer) {
-      window.electron.ipcRenderer.on('media:reload', () => {
+    // Listen for media reload events (using canonical API)
+    let unsubscribe: (() => void) | undefined;
+    if (window.electronAPI) {
+      unsubscribe = window.electronAPI.on('media:reload', () => {
         console.log('[Splash] Media reloaded, refreshing background');
         loadMediaFromGlobalLoader();
       });
     }
 
     return () => {
-      if (window.electron?.ipcRenderer) {
-        window.electron.ipcRenderer.removeAllListeners('media:reload');
+      if (unsubscribe) {
+        unsubscribe();
       }
     };
   }, []);
@@ -123,14 +124,14 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
    */
   const loadMediaFromGlobalLoader = async () => {
     try {
-      if (!window.electron?.ipcRenderer) {
-        console.log('[Splash] Electron IPC not available, using fallback gradient');
+      if (!window.electronAPI) {
+        console.log('[Splash] Electron API not available, using fallback gradient');
         setUseProceduralBackground(true);
         return;
       }
 
-      // Get random image from global MediaLoader
-      const background = await window.electron.ipcRenderer.invoke('media:getRandomImage');
+      // Get random image from global MediaLoader (using canonical API)
+      const background = await window.electronAPI.invoke('media:getRandomImage');
 
       if (background.type === 'gradient') {
         // Using procedural gradient (no images available)
@@ -151,7 +152,7 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
       }
 
       // Optional: Try to get a video too
-      const video = await window.electron.ipcRenderer.invoke('media:getRandomVideo');
+      const video = await window.electronAPI.invoke('media:getRandomVideo');
       if (video) {
         console.log('[Splash] Video available:', video.filename);
         // Could switch to video instead of image if preferred

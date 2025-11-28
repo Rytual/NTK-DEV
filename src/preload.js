@@ -5,16 +5,26 @@
  * This script exposes a safe subset of Electron APIs to the renderer
  * using contextBridge for security.
  *
- * All modules access the same API surface:
- * - window.electron.ipcRenderer.invoke(channel, ...args)
- * - window.electron.ipcRenderer.send(channel, ...args)
- * - window.electron.ipcRenderer.on(channel, callback)
+ * CANONICAL API: window.electronAPI
+ * - window.electronAPI.invoke(channel, ...args)
+ * - window.electronAPI.send(channel, ...args)
+ * - window.electronAPI.on(channel, callback)
+ * - window.electronAPI.once(channel, callback)
+ * - window.electronAPI.removeAllListeners(channel)
  */
 
 const { contextBridge, ipcRenderer } = require('electron');
 
-// Define allowed IPC channels for security
+// ============================================================================
+// CHANNEL ALLOWLISTS (Security)
+// ============================================================================
+
 const validInvokeChannels = [
+  // System
+  'system:getModuleStates',
+  'system:getVersion',
+  'system:getPlatform',
+
   // MediaLoader (GLOBAL)
   'media:getRandomImage',
   'media:getRandomVideo',
@@ -27,11 +37,6 @@ const validInvokeChannels = [
   'kage:sendMessage',
   'kage:setContext',
   'kage:getProviders',
-
-  // System
-  'system:getModuleStates',
-  'system:getVersion',
-  'system:getPlatform',
 
   // Module: NinjaShark
   'ninjashark:startCapture',
@@ -84,13 +89,20 @@ const validInvokeChannels = [
   'academy:getQuestion',
   'academy:submitAnswer',
   'academy:getProgress',
-  'academy:getCertifications'
+  'academy:getCertifications',
+  'academy:getExams',
+  'academy:getExamQuestions',
+  'academy:getRandomQuestions',
+  'academy:getUserStats',
+  'academy:getProgressSummary',
+  'academy:getAllBadges',
+  'academy:recordAnswer',
 ];
 
 const validSendChannels = [
   'app:ready',
   'module:navigate',
-  'kage:clearHistory'
+  'kage:clearHistory',
 ];
 
 const validReceiveChannels = [
@@ -118,65 +130,77 @@ const validReceiveChannels = [
   'putty:data',
   'auvik:deviceFound',
   'security:alert',
-  'ticketing:notification'
+  'ticketing:notification',
 ];
 
-// Expose protected APIs to renderer
-contextBridge.exposeInMainWorld('electron', {
-  ipcRenderer: {
-    /**
-     * Invoke a channel and wait for response (async)
-     */
-    invoke: (channel, ...args) => {
-      if (validInvokeChannels.includes(channel)) {
-        return ipcRenderer.invoke(channel, ...args);
-      }
-      console.warn(`[Preload] Blocked invoke to unauthorized channel: ${channel}`);
-      return Promise.reject(new Error(`Unauthorized channel: ${channel}`));
-    },
+// ============================================================================
+// EXPOSE CANONICAL API: window.electronAPI
+// ============================================================================
 
-    /**
-     * Send a message to main process (fire and forget)
-     */
-    send: (channel, ...args) => {
-      if (validSendChannels.includes(channel)) {
-        ipcRenderer.send(channel, ...args);
-      } else {
-        console.warn(`[Preload] Blocked send to unauthorized channel: ${channel}`);
-      }
-    },
+contextBridge.exposeInMainWorld('electronAPI', {
+  /**
+   * Invoke a channel and wait for response (async)
+   * @param {string} channel - IPC channel name
+   * @param {...any} args - Arguments to pass
+   * @returns {Promise<any>} Response from main process
+   */
+  invoke: (channel, ...args) => {
+    if (validInvokeChannels.includes(channel)) {
+      return ipcRenderer.invoke(channel, ...args);
+    }
+    console.warn(`[Preload] Blocked invoke to unauthorized channel: ${channel}`);
+    return Promise.reject(new Error(`Unauthorized channel: ${channel}`));
+  },
 
-    /**
-     * Listen for messages from main process
-     */
-    on: (channel, callback) => {
-      if (validReceiveChannels.includes(channel)) {
-        const subscription = (event, ...args) => callback(...args);
-        ipcRenderer.on(channel, subscription);
-        return () => ipcRenderer.removeListener(channel, subscription);
-      }
-      console.warn(`[Preload] Blocked listener on unauthorized channel: ${channel}`);
-      return () => {};
-    },
+  /**
+   * Send a message to main process (fire and forget)
+   * @param {string} channel - IPC channel name
+   * @param {...any} args - Arguments to pass
+   */
+  send: (channel, ...args) => {
+    if (validSendChannels.includes(channel)) {
+      ipcRenderer.send(channel, ...args);
+    } else {
+      console.warn(`[Preload] Blocked send to unauthorized channel: ${channel}`);
+    }
+  },
 
-    /**
-     * Listen for a single message
-     */
-    once: (channel, callback) => {
-      if (validReceiveChannels.includes(channel)) {
-        ipcRenderer.once(channel, (event, ...args) => callback(...args));
-      } else {
-        console.warn(`[Preload] Blocked once listener on unauthorized channel: ${channel}`);
-      }
-    },
+  /**
+   * Listen for messages from main process
+   * @param {string} channel - IPC channel name
+   * @param {function} callback - Handler function
+   * @returns {function} Unsubscribe function
+   */
+  on: (channel, callback) => {
+    if (validReceiveChannels.includes(channel)) {
+      const subscription = (_event, ...args) => callback(...args);
+      ipcRenderer.on(channel, subscription);
+      return () => ipcRenderer.removeListener(channel, subscription);
+    }
+    console.warn(`[Preload] Blocked listener on unauthorized channel: ${channel}`);
+    return () => {};
+  },
 
-    /**
-     * Remove all listeners for a channel
-     */
-    removeAllListeners: (channel) => {
-      if (validReceiveChannels.includes(channel)) {
-        ipcRenderer.removeAllListeners(channel);
-      }
+  /**
+   * Listen for a single message
+   * @param {string} channel - IPC channel name
+   * @param {function} callback - Handler function
+   */
+  once: (channel, callback) => {
+    if (validReceiveChannels.includes(channel)) {
+      ipcRenderer.once(channel, (_event, ...args) => callback(...args));
+    } else {
+      console.warn(`[Preload] Blocked once listener on unauthorized channel: ${channel}`);
+    }
+  },
+
+  /**
+   * Remove all listeners for a channel
+   * @param {string} channel - IPC channel name
+   */
+  removeAllListeners: (channel) => {
+    if (validReceiveChannels.includes(channel)) {
+      ipcRenderer.removeAllListeners(channel);
     }
   },
 
@@ -188,14 +212,70 @@ contextBridge.exposeInMainWorld('electron', {
   versions: {
     electron: process.versions.electron,
     node: process.versions.node,
-    chrome: process.versions.chrome
-  }
+    chrome: process.versions.chrome,
+  },
 });
 
-// Notify when preload is ready
+// ============================================================================
+// BACKWARD COMPATIBILITY: window.electron (deprecated)
+// ============================================================================
+
+// Expose legacy API for gradual migration
+// TODO: Remove in v12.0.0
+contextBridge.exposeInMainWorld('electron', {
+  ipcRenderer: {
+    invoke: (channel, ...args) => {
+      console.warn(`[Preload] DEPRECATED: window.electron.ipcRenderer.invoke() - Use window.electronAPI.invoke() instead`);
+      if (validInvokeChannels.includes(channel)) {
+        return ipcRenderer.invoke(channel, ...args);
+      }
+      return Promise.reject(new Error(`Unauthorized channel: ${channel}`));
+    },
+    send: (channel, ...args) => {
+      console.warn(`[Preload] DEPRECATED: window.electron.ipcRenderer.send() - Use window.electronAPI.send() instead`);
+      if (validSendChannels.includes(channel)) {
+        ipcRenderer.send(channel, ...args);
+      }
+    },
+    on: (channel, callback) => {
+      console.warn(`[Preload] DEPRECATED: window.electron.ipcRenderer.on() - Use window.electronAPI.on() instead`);
+      if (validReceiveChannels.includes(channel)) {
+        const subscription = (_event, ...args) => callback(...args);
+        ipcRenderer.on(channel, subscription);
+        return () => ipcRenderer.removeListener(channel, subscription);
+      }
+      return () => {};
+    },
+    once: (channel, callback) => {
+      console.warn(`[Preload] DEPRECATED: window.electron.ipcRenderer.once() - Use window.electronAPI.once() instead`);
+      if (validReceiveChannels.includes(channel)) {
+        ipcRenderer.once(channel, (_event, ...args) => callback(...args));
+      }
+    },
+    removeAllListeners: (channel) => {
+      if (validReceiveChannels.includes(channel)) {
+        ipcRenderer.removeAllListeners(channel);
+      }
+    },
+  },
+  platform: process.platform,
+  arch: process.arch,
+  versions: {
+    electron: process.versions.electron,
+    node: process.versions.node,
+    chrome: process.versions.chrome,
+  },
+});
+
+// ============================================================================
+// STARTUP LOGGING
+// ============================================================================
+
 console.log('[Preload] Ninja Toolkit v11 preload script loaded');
-console.log('[Preload] Exposed channels:', {
+console.log('[Preload] Canonical API: window.electronAPI');
+console.log('[Preload] Legacy API: window.electron (deprecated)');
+console.log('[Preload] Channels:', {
   invoke: validInvokeChannels.length,
   send: validSendChannels.length,
-  receive: validReceiveChannels.length
+  receive: validReceiveChannels.length,
 });
