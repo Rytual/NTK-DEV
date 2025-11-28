@@ -16,7 +16,7 @@
  * - Events are centralized
  */
 
-const MediaLoader = require('./MediaLoader');
+const MediaLoader = require('./MediaLoader.cjs');
 
 let instance = null;
 

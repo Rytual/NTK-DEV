@@ -17,7 +17,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const Anthropic = require('@anthropic-ai/sdk');
-const { initDatabase, saveKageConfig, getKageConfig, getAllConfigs, deleteKageConfig } = require('./db-init');
+const { initDatabase, saveKageConfig, getKageConfig, getAllConfigs, deleteKageConfig } = require('./db-init.cjs');
 
 // Initialize Express app
 const app = express();

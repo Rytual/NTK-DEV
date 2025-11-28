@@ -51,7 +51,7 @@ const moduleStatus: Record<string, { loaded: boolean; error?: string }> = {
 // Load MediaLoader Bridge
 let mediaLoaderBridge: any = null;
 try {
-  mediaLoaderBridge = require('./backend/mediaLoaderBridge');
+  mediaLoaderBridge = require('./backend/mediaLoaderBridge.cjs');
   moduleStatus.mediaLoader.loaded = true;
   console.log('[Main] MediaLoader bridge loaded');
 } catch (error: any) {
@@ -62,7 +62,7 @@ try {
 // Load Database
 let dbInit: any = null;
 try {
-  dbInit = require('./backend/db-init');
+  dbInit = require('./backend/db-init.cjs');
   moduleStatus.database.loaded = true;
   console.log('[Main] Database module loaded');
 } catch (error: any) {
@@ -73,7 +73,7 @@ try {
 // Load NinjaShark Capture Engine
 let CaptureEngine: any = null;
 try {
-  const captureModule = require('./modules/ninjashark/backend/capture-engine');
+  const captureModule = require('./modules/ninjashark/backend/capture-engine.cjs');
   CaptureEngine = captureModule.CaptureEngine;
   moduleStatus.ninjashark.loaded = true;
   console.log('[Main] NinjaShark capture engine loaded');
@@ -85,7 +85,7 @@ try {
 // Load PowerShell Engine
 let PowerShellEngine: any = null;
 try {
-  const psModule = require('./modules/powershell/backend/powershell-engine');
+  const psModule = require('./modules/powershell/backend/powershell-engine.cjs');
   PowerShellEngine = psModule.PowerShellEngine;
   moduleStatus.powershell.loaded = true;
   console.log('[Main] PowerShell engine loaded');
@@ -97,7 +97,7 @@ try {
 // Load Remote Access Engine (PuTTY)
 let RemoteAccessEngine: any = null;
 try {
-  const remoteModule = require('./modules/putty/backend/remote-access-engine');
+  const remoteModule = require('./modules/putty/backend/remote-access-engine.cjs');
   RemoteAccessEngine = remoteModule.RemoteAccessEngine;
   moduleStatus.putty.loaded = true;
   console.log('[Main] Remote Access engine loaded');
@@ -109,7 +109,7 @@ try {
 // Load Network Mapper (Auvik)
 let NetworkMapper: any = null;
 try {
-  const networkModule = require('./modules/auvik/backend/network-mapper');
+  const networkModule = require('./modules/auvik/backend/network-mapper.cjs');
   NetworkMapper = networkModule.NetworkMapper || networkModule;
   moduleStatus.auvik.loaded = true;
   console.log('[Main] Network Mapper loaded');
@@ -121,7 +121,7 @@ try {
 // Load Security Scanner
 let SecurityScanner: any = null;
 try {
-  const securityModule = require('./modules/security/backend/vulnerability-scanner');
+  const securityModule = require('./modules/security/backend/vulnerability-scanner.cjs');
   SecurityScanner = securityModule.VulnerabilityScanner || securityModule;
   moduleStatus.security.loaded = true;
   console.log('[Main] Security Scanner loaded');
@@ -133,7 +133,7 @@ try {
 // Load MS Admin modules
 let MSAdminAuth: any = null;
 try {
-  MSAdminAuth = require('./modules/msadmin/backend/msal-auth');
+  MSAdminAuth = require('./modules/msadmin/backend/msal-auth.cjs');
   moduleStatus.msadmin.loaded = true;
   console.log('[Main] MS Admin auth loaded');
 } catch (error: any) {
@@ -144,7 +144,7 @@ try {
 // Load KageForge Provider Router
 let ProviderRouter: any = null;
 try {
-  const kageforgeModule = require('./modules/kageforge/backend/provider-router');
+  const kageforgeModule = require('./modules/kageforge/backend/provider-router.cjs');
   ProviderRouter = kageforgeModule.ProviderRouter || kageforgeModule;
   moduleStatus.kageforge.loaded = true;
   console.log('[Main] KageForge provider router loaded');
@@ -156,7 +156,7 @@ try {
 // Load Ticketing Client
 let TicketingClient: any = null;
 try {
-  const ticketingModule = require('./modules/ticketing/backend/connectwise-client');
+  const ticketingModule = require('./modules/ticketing/backend/connectwise-client.cjs');
   TicketingClient = ticketingModule.ConnectWiseClient || ticketingModule;
   moduleStatus.ticketing.loaded = true;
   console.log('[Main] Ticketing client loaded');
@@ -168,7 +168,7 @@ try {
 // Load Academy (requires better-sqlite3)
 let AcademyEngine: any = null;
 try {
-  const academyModule = require('./modules/academy/backend/engines/QuestionBank');
+  const academyModule = require('./modules/academy/backend/engines/QuestionBank.cjs');
   AcademyEngine = academyModule.QuestionBank || academyModule;
   moduleStatus.academy.loaded = true;
   console.log('[Main] Academy engine loaded');

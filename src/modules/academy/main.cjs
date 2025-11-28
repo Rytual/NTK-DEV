@@ -9,10 +9,10 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 // Import backend engines
-const DatabaseManager = require('./backend/engines/DatabaseManager');
-const GamificationEngine = require('./backend/engines/GamificationEngine');
-const MediaLoader = require('./backend/engines/MediaLoader');
-const { QuestionBankManager } = require('./backend/engines/QuestionBank');
+const DatabaseManager = require('./backend/engines/DatabaseManager.cjs');
+const GamificationEngine = require('./backend/engines/GamificationEngine.cjs');
+const MediaLoader = require('./backend/engines/MediaLoader.cjs');
+const { QuestionBankManager } = require('./backend/engines/QuestionBank.cjs');
 
 // Global references
 let mainWindow = null;

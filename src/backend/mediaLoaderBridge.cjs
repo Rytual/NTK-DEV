@@ -6,7 +6,7 @@
  */
 
 const { ipcMain } = require('electron');
-const { getMediaLoader } = require('../core/media');
+const { getMediaLoader } = require('../core/media/index.cjs');
 
 /**
  * Initialize MediaLoader IPC handlers
@@ -79,7 +79,7 @@ function cleanupMediaLoaderBridge() {
   ipcMain.removeHandler('media:getAllMedia');
   ipcMain.removeHandler('media:reload');
 
-  const { getMediaLoader } = require('../core/media');
+  const { getMediaLoader } = require('../core/media/index.cjs');
   const mediaLoader = getMediaLoader();
   mediaLoader.cleanup();
 

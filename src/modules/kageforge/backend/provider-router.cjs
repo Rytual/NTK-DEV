@@ -8,11 +8,11 @@
  */
 
 const { EventEmitter } = require('events');
-const OpenAIProvider = require('./providers/openai-provider');
-const AnthropicProvider = require('./providers/anthropic-provider');
-const VertexAIProvider = require('./providers/vertex-provider');
-const GrokProvider = require('./providers/grok-provider');
-const Copilot365Provider = require('./providers/copilot-provider');
+const OpenAIProvider = require('./providers/openai-provider.cjs');
+const AnthropicProvider = require('./providers/anthropic-provider.cjs');
+const VertexAIProvider = require('./providers/vertex-provider.cjs');
+const GrokProvider = require('./providers/grok-provider.cjs');
+const Copilot365Provider = require('./providers/copilot-provider.cjs');
 
 /**
  * Router Configuration

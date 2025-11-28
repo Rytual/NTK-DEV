@@ -22,7 +22,7 @@ class MediaLoader extends EventEmitter {
     super();
 
     // Configure paths - point to project root /art directory
-    const projectRoot = path.resolve(__dirname, '../../..');
+    const projectRoot = process.cwd();
     this.videosPath = options.videosPath || path.join(projectRoot, 'art', 'videos');
     this.imagesPath = options.imagesPath || path.join(projectRoot, 'art', 'images');
 
