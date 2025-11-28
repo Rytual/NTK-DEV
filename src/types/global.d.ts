@@ -335,6 +335,48 @@ interface Performance {
 }
 
 // ============================================================================
+// HMR (HOT MODULE REPLACEMENT) TYPES
+// ============================================================================
+
+interface ImportMeta {
+  hot?: {
+    accept: (callback?: () => void) => void;
+    dispose: (callback: () => void) => void;
+    invalidate: () => void;
+  };
+}
+
+// Augment NodeJS module type to include HMR
+declare namespace NodeJS {
+  interface Module {
+    hot?: {
+      accept: (path?: string | string[], callback?: () => void) => void;
+      dispose: (callback: () => void) => void;
+      invalidate: () => void;
+    };
+  }
+}
+
+// ============================================================================
+// STYLED-JSX TYPES
+// ============================================================================
+
+// Augment React's JSX namespace for styled-jsx support
+declare namespace React {
+  namespace JSX {
+    interface IntrinsicElements {
+      style: React.DetailedHTMLProps<
+        React.StyleHTMLAttributes<HTMLStyleElement> & {
+          jsx?: boolean;
+          global?: boolean;
+        },
+        HTMLStyleElement
+      >;
+    }
+  }
+}
+
+// ============================================================================
 // MODULE AUGMENTATIONS
 // ============================================================================
 

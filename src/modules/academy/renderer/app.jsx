@@ -92,7 +92,7 @@ function Sidebar({ currentView, onNavigate, userStats }) {
           <div style={styles.userLevel}>Level {userStats.level}</div>
           <div style={styles.userRank}>{userStats.rank}</div>
           <div style={styles.xpBar}>
-            <div style={styles.xpBarFill} style={{ width: '65%' }}></div>
+            <div style={{ ...styles.xpBarFill, width: '65%' }}></div>
           </div>
           <div style={styles.userStats}>
             <div>🔥 {userStats.streakCurrent} days</div>

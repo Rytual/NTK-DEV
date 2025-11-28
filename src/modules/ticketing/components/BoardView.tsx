@@ -144,11 +144,14 @@ export const BoardView: React.FC<BoardViewProps> = ({
                         draggableId={ticket.id.toString()}
                         index={index}
                       >
-                        {(provided, snapshot) => (
+                        {(provided, snapshot) => {
+                          // Destructure to avoid onDragStart conflict between motion and react-beautiful-dnd
+                          const { onDragStart: _, ...dragHandleProps } = provided.dragHandleProps || {};
+                          return (
                           <motion.div
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            {...provided.dragHandleProps}
+                            {...dragHandleProps}
                             className={`ticket-card ${snapshot.isDragging ? 'dragging' : ''}`}
                             onClick={() => onTicketClick?.(ticket.id)}
                             whileHover={{ scale: 1.02 }}
@@ -166,7 +169,7 @@ export const BoardView: React.FC<BoardViewProps> = ({
                               <div className="ticket-owner">{ticket.owner.name}</div>
                             )}
                           </motion.div>
-                        )}
+                        );}}
                       </Draggable>
                     ))}
                     {provided.placeholder}

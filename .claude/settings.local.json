@@ -1,29 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir:*)",
-      "Bash(find:*)",
-      "Bash(findstr:*)",
-      "Bash(npx tsc:*)",
-      "Bash(npm start)",
-      "Bash(npm install:*)",
-      "Bash(npm ls:*)",
-      "Bash(npm rebuild:*)",
-      "Bash(taskkill:*)",
-      "Bash(git init:*)",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Ninja Toolkit v11.0.0 - State Preservation [2025-11-28T09:20:00]\n\nPROJECT: Ninja Toolkit v11 - MSP Management Suite\nVERSION: 11.0.0\nTIMESTAMP: 2025-11-28T09:20:00\n\nARCHITECTURE:\n- Electron 39.2.4 + React 19.2.0 + TypeScript 5.9.3\n- Vite 7.2.4 build system with Electron Forge 7.4.0\n- Tailwind CSS 4.0.17 with Feudal Tokyo Dark theme\n- 3-pane layout: BladeNav | ContentRouter | KageChat\n\nMODULES (11 Total):\n1. NinjaShark - Network packet capture/analysis\n2. PowerShell - Terminal emulation with history\n3. PuTTY/Remote Access - SSH/Telnet client\n4. Auvik/Network Map - Infrastructure monitoring\n5. Security - Vulnerability scanning\n6. MSAdmin - Microsoft 365/Azure administration\n7. KageForge - AI provider management (5 providers)\n8. Ticketing - ConnectWise integration\n9. Academy - Training platform\n10. MediaLoader - Global media system\n11. KageChat - AI assistant\n\nCURRENT STATE:\n- Application launches in development mode\n- Electron shell functional, window displays\n- UI rendering issues (layout/styling incomplete)\n- Backend modules not bundled into build\n- Native modules removed (node-pty, better-sqlite3, cap, serialport, snmp-native)\n\nFILES: 130 files across src/, build/, scripts/, art/, assets/\n\nSTATUS: Development baseline - requires UI/backend debugging\n\nSee STATUS-REPORT-2025-11-28.md for comprehensive analysis\nEOF\n)\")",
-      "Bash(git remote add:*)",
-      "Bash(git branch:*)",
-      "Bash(git push:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\ndocs: Add comprehensive project documentation [2025-11-28T09:45:00]\n\nAdded documentation directory with:\n- SESSION-LOG-2025-11-28.md: Complete session notes and findings\n- ARCHITECTURE.md: System architecture, data flow, directory structure\n- MODULE-STATUS.md: Per-module status tracking (11 modules)\n- DEBUGGING-JOURNAL.md: Chronological debugging log with open issues\n\nOpen issues documented:\n- UI layout rendering (Tailwind CSS)\n- IPC API mismatch (window.electron vs window.electronAPI)\n- Backend modules not bundled by Vite\n- TypeScript compilation errors in KageForge/Academy\n\nThis documentation enables session continuity and tracks debugging progress.\nEOF\n)\")",
+      "Bash(git stash push:*)",
+      "Bash(git stash:*)",
       "Bash(git checkout:*)",
-      "Bash(git pull:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\ndocs: Comprehensive scope analysis and professional README\n\nSession 3 Documentation Updates:\n- Reviewed all 13 original prompts (prompt0-12.txt)\n- Documented full project scope including feudal theme identity\n- Added cross-module integration chain specifications\n- Identified native module requirements as core functionality\n- Updated performance targets and compliance frameworks\n\nREADME Enhancements:\n- Executive summary with business value metrics\n- Complete technology stack with versions\n- Architecture diagrams (3-pane layout, data flow)\n- All 11 modules with detailed feature tables\n- Cross-module automation chain documentation\n- 7 enterprise compliance frameworks\n- Performance specifications with implementations\n- Enterprise deployment instructions (GPO/Intune)\n- Security architecture overview\n- Development status tracking\n\nDebugging Journal:\n- Entry 009: Comprehensive scope analysis findings\n- Updated open issues summary\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git commit -m \"$(cat <<''EOF''\nfeat(ipc): Phase 2 - IPC Bridge Alignment\n\nBREAKING CHANGE: Canonical API is now window.electronAPI\n\nChanges:\n- Updated preload.js to expose canonical window.electronAPI\n- Added deprecation warnings for window.electron (legacy)\n- Fixed KageChat.tsx: kage-query -> kage:sendMessage\n- Fixed Splash.tsx: window.electron -> window.electronAPI\n- Updated TypeScript definitions with comprehensive IPC types\n- Removed conflicting Academy window.electronAPI declaration\n- Created IPC-INTERFACE-SPECIFICATION.md documentation\n\nIPC API Surface:\n- window.electronAPI.invoke(channel, ...args)\n- window.electronAPI.send(channel, ...args)\n- window.electronAPI.on(channel, callback) -> unsubscribe\n- window.electronAPI.once(channel, callback)\n- window.electronAPI.removeAllListeners(channel)\n\nChannel naming convention: {module}:{action}\nExamples: media:getRandomImage, kage:sendMessage, academy:getProgress\n\nResolves: Entry 006, Entry 010 in DEBUGGING-JOURNAL.md\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git merge:*)",
-      "Bash(tasklist:*)",
-      "Bash(cat:*)"
+      "Bash(npx tsc:*)",
+      "Bash(echo:*)",
+      "Bash(timeout 30 npm start)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
