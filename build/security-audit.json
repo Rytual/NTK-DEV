@@ -1,0 +1,66 @@
+{
+  "timestamp": "2025-11-28T03:37:38.264Z",
+  "score": 65,
+  "grade": "D",
+  "summary": {
+    "total": 6,
+    "passed": 3,
+    "warnings": 1,
+    "failed": 1
+  },
+  "findings": [
+    {
+      "category": "Electron Fuses",
+      "status": "pass",
+      "message": "All security fuses properly configured",
+      "details": {
+        "RunAsNode": true,
+        "CookieEncryption": true,
+        "NodeOptions": true,
+        "NodeCliInspect": true,
+        "AsarIntegrity": true,
+        "OnlyLoadFromAsar": true
+      }
+    },
+    {
+      "category": "Preload Security",
+      "status": "warn",
+      "message": "Some preload security concerns detected",
+      "details": {
+        "usesContextBridge": true,
+        "noNodeIntegration": true,
+        "hasChannelWhitelist": false,
+        "noEval": true,
+        "noRemoteModule": true
+      }
+    },
+    {
+      "category": "Hardcoded Secrets",
+      "status": "fail",
+      "message": "Found 2 potential hardcoded secrets",
+      "count": 2
+    },
+    {
+      "category": "UAC Gate",
+      "status": "pass",
+      "message": "Installer requests admin elevation for system-wide install",
+      "requiresAdmin": true
+    },
+    {
+      "category": "Sandbox Configuration",
+      "status": "pass",
+      "message": "Renderer process sandbox properly configured",
+      "details": {
+        "sandboxEnabled": true,
+        "contextIsolation": true,
+        "webSecurity": true
+      }
+    },
+    {
+      "category": "Dependency Vulnerabilities",
+      "status": "info",
+      "message": "npm audit check skipped (offline or no package-lock.json)"
+    }
+  ],
+  "recommendation": "Address security findings before MSP deployment"
+}

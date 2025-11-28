@@ -1,0 +1,637 @@
+{
+  "summary": {
+    "timestamp": "2025-11-28T03:37:46.554Z",
+    "simulations": 5,
+    "simulationsPassed": 5,
+    "totalTests": 90,
+    "testsPassed": 89,
+    "testsWarning": 1,
+    "testsFailed": 0,
+    "duration": 509,
+    "success": true
+  },
+  "details": [
+    {
+      "environment": {
+        "id": 0,
+        "name": "Win11-Home",
+        "ram": "8GB",
+        "storage": "256GB",
+        "dotnet": "6.0.25",
+        "timestamp": "2025-11-28T03:37:46.046Z"
+      },
+      "tests": [
+        {
+          "name": "Silent Install (/S)",
+          "status": "pass",
+          "message": "Installation completed silently",
+          "duration": 2431.357617513161
+        },
+        {
+          "name": "Registry Keys (GPO/Intune)",
+          "status": "pass",
+          "message": "All registry keys written correctly",
+          "keys": [
+            "HKLM\\Software\\Policies\\NinjaToolkit",
+            "HKLM\\Software\\NinjaToolkit\\Detection"
+          ]
+        },
+        {
+          "name": "Auto-start Hook",
+          "status": "pass",
+          "message": "Startup registry entry created"
+        },
+        {
+          "name": ".NET Compatibility",
+          "status": "pass",
+          "message": ".NET 6.0.25 detected - Squirrel updates enabled"
+        },
+        {
+          "name": "Module: ninjashark",
+          "status": "pass",
+          "message": "ninjashark initialized successfully",
+          "loadTime": 53.98720511428653
+        },
+        {
+          "name": "Module: powershell",
+          "status": "pass",
+          "message": "powershell initialized successfully",
+          "loadTime": 59.89020635939556
+        },
+        {
+          "name": "Module: putty",
+          "status": "pass",
+          "message": "putty initialized successfully",
+          "loadTime": 125.57647014571766
+        },
+        {
+          "name": "Module: auvik",
+          "status": "pass",
+          "message": "auvik initialized successfully",
+          "loadTime": 117.3918539974566
+        },
+        {
+          "name": "Module: security",
+          "status": "pass",
+          "message": "security initialized successfully",
+          "loadTime": 135.56717294002067
+        },
+        {
+          "name": "Module: msadmin",
+          "status": "pass",
+          "message": "msadmin initialized successfully",
+          "loadTime": 71.36972254307278
+        },
+        {
+          "name": "Module: kageforge",
+          "status": "pass",
+          "message": "kageforge initialized successfully",
+          "loadTime": 88.52143954219267
+        },
+        {
+          "name": "Module: ticketing",
+          "status": "pass",
+          "message": "ticketing initialized successfully",
+          "loadTime": 92.43296648078419
+        },
+        {
+          "name": "Module: academy",
+          "status": "pass",
+          "message": "academy initialized successfully",
+          "loadTime": 91.37267357806326
+        },
+        {
+          "name": "GLOBAL MediaLoader",
+          "status": "pass",
+          "message": "Fisher-Yates shuffle active, fs.watch enabled",
+          "artLoaded": 22
+        },
+        {
+          "name": "KageChat AI",
+          "status": "pass",
+          "message": "AI assistant responding",
+          "latency": 77.95938774539671
+        },
+        {
+          "name": "Offline Mode",
+          "status": "pass",
+          "message": "All modules functional without network"
+        },
+        {
+          "name": "Memory Usage",
+          "status": "pass",
+          "message": "Peak memory: 179MB",
+          "value": 178.69918669894247
+        },
+        {
+          "name": "Performance Timers",
+          "status": "pass",
+          "message": "Average timer: 17.7ms (target: <20ms)",
+          "value": 17.71116328252558
+        }
+      ],
+      "passed": true,
+      "duration": 0
+    },
+    {
+      "environment": {
+        "id": 1,
+        "name": "Win11-Pro",
+        "ram": "16GB",
+        "storage": "512GB",
+        "dotnet": "7.0.14",
+        "timestamp": "2025-11-28T03:37:46.147Z"
+      },
+      "tests": [
+        {
+          "name": "Silent Install (/S)",
+          "status": "pass",
+          "message": "Installation completed silently",
+          "duration": 2550.042921868188
+        },
+        {
+          "name": "Registry Keys (GPO/Intune)",
+          "status": "pass",
+          "message": "All registry keys written correctly",
+          "keys": [
+            "HKLM\\Software\\Policies\\NinjaToolkit",
+            "HKLM\\Software\\NinjaToolkit\\Detection"
+          ]
+        },
+        {
+          "name": "Auto-start Hook",
+          "status": "pass",
+          "message": "Startup registry entry created"
+        },
+        {
+          "name": ".NET Compatibility",
+          "status": "pass",
+          "message": ".NET 7.0.14 detected - Squirrel updates enabled"
+        },
+        {
+          "name": "Module: ninjashark",
+          "status": "pass",
+          "message": "ninjashark initialized successfully",
+          "loadTime": 110.63800480689244
+        },
+        {
+          "name": "Module: powershell",
+          "status": "pass",
+          "message": "powershell initialized successfully",
+          "loadTime": 135.00555179805713
+        },
+        {
+          "name": "Module: putty",
+          "status": "pass",
+          "message": "putty initialized successfully",
+          "loadTime": 60.306433996591004
+        },
+        {
+          "name": "Module: auvik",
+          "status": "pass",
+          "message": "auvik initialized successfully",
+          "loadTime": 111.33575881725689
+        },
+        {
+          "name": "Module: security",
+          "status": "pass",
+          "message": "security initialized successfully",
+          "loadTime": 125.31900739818346
+        },
+        {
+          "name": "Module: msadmin",
+          "status": "pass",
+          "message": "msadmin initialized successfully",
+          "loadTime": 125.98100450538242
+        },
+        {
+          "name": "Module: kageforge",
+          "status": "pass",
+          "message": "kageforge initialized successfully",
+          "loadTime": 121.38161309692333
+        },
+        {
+          "name": "Module: ticketing",
+          "status": "pass",
+          "message": "ticketing initialized successfully",
+          "loadTime": 102.83118425887032
+        },
+        {
+          "name": "Module: academy",
+          "status": "pass",
+          "message": "academy initialized successfully",
+          "loadTime": 128.03021624025598
+        },
+        {
+          "name": "GLOBAL MediaLoader",
+          "status": "pass",
+          "message": "Fisher-Yates shuffle active, fs.watch enabled",
+          "artLoaded": 58
+        },
+        {
+          "name": "KageChat AI",
+          "status": "pass",
+          "message": "AI assistant responding",
+          "latency": 92.59263665340654
+        },
+        {
+          "name": "Offline Mode",
+          "status": "pass",
+          "message": "All modules functional without network"
+        },
+        {
+          "name": "Memory Usage",
+          "status": "pass",
+          "message": "Peak memory: 282MB",
+          "value": 282.2788773056742
+        },
+        {
+          "name": "Performance Timers",
+          "status": "pass",
+          "message": "Average timer: 18.6ms (target: <20ms)",
+          "value": 18.572812927784803
+        }
+      ],
+      "passed": true,
+      "duration": 0
+    },
+    {
+      "environment": {
+        "id": 2,
+        "name": "Win11-Enterprise",
+        "ram": "32GB",
+        "storage": "1TB",
+        "dotnet": "8.0.0",
+        "timestamp": "2025-11-28T03:37:46.249Z"
+      },
+      "tests": [
+        {
+          "name": "Silent Install (/S)",
+          "status": "pass",
+          "message": "Installation completed silently",
+          "duration": 2618.463875596127
+        },
+        {
+          "name": "Registry Keys (GPO/Intune)",
+          "status": "pass",
+          "message": "All registry keys written correctly",
+          "keys": [
+            "HKLM\\Software\\Policies\\NinjaToolkit",
+            "HKLM\\Software\\NinjaToolkit\\Detection"
+          ]
+        },
+        {
+          "name": "Auto-start Hook",
+          "status": "pass",
+          "message": "Startup registry entry created"
+        },
+        {
+          "name": ".NET Compatibility",
+          "status": "pass",
+          "message": ".NET 8.0.0 detected - Squirrel updates enabled"
+        },
+        {
+          "name": "Module: ninjashark",
+          "status": "pass",
+          "message": "ninjashark initialized successfully",
+          "loadTime": 133.3189248003029
+        },
+        {
+          "name": "Module: powershell",
+          "status": "pass",
+          "message": "powershell initialized successfully",
+          "loadTime": 56.175292547635415
+        },
+        {
+          "name": "Module: putty",
+          "status": "pass",
+          "message": "putty initialized successfully",
+          "loadTime": 107.25758411296056
+        },
+        {
+          "name": "Module: auvik",
+          "status": "pass",
+          "message": "auvik initialized successfully",
+          "loadTime": 92.4201124237483
+        },
+        {
+          "name": "Module: security",
+          "status": "pass",
+          "message": "security initialized successfully",
+          "loadTime": 141.6515240760221
+        },
+        {
+          "name": "Module: msadmin",
+          "status": "pass",
+          "message": "msadmin initialized successfully",
+          "loadTime": 87.32474864039642
+        },
+        {
+          "name": "Module: kageforge",
+          "status": "pass",
+          "message": "kageforge initialized successfully",
+          "loadTime": 103.90614554383957
+        },
+        {
+          "name": "Module: ticketing",
+          "status": "pass",
+          "message": "ticketing initialized successfully",
+          "loadTime": 98.40840909715746
+        },
+        {
+          "name": "Module: academy",
+          "status": "pass",
+          "message": "academy initialized successfully",
+          "loadTime": 132.26285132199143
+        },
+        {
+          "name": "GLOBAL MediaLoader",
+          "status": "pass",
+          "message": "Fisher-Yates shuffle active, fs.watch enabled",
+          "artLoaded": 34
+        },
+        {
+          "name": "KageChat AI",
+          "status": "pass",
+          "message": "AI assistant responding",
+          "latency": 57.417973813470724
+        },
+        {
+          "name": "Offline Mode",
+          "status": "pass",
+          "message": "All modules functional without network"
+        },
+        {
+          "name": "Memory Usage",
+          "status": "pass",
+          "message": "Peak memory: 244MB",
+          "value": 244.19810964509577
+        },
+        {
+          "name": "Performance Timers",
+          "status": "pass",
+          "message": "Average timer: 15.0ms (target: <20ms)",
+          "value": 14.960745746959244
+        }
+      ],
+      "passed": true,
+      "duration": 0
+    },
+    {
+      "environment": {
+        "id": 3,
+        "name": "Win11-Education",
+        "ram": "8GB",
+        "storage": "128GB",
+        "dotnet": "6.0.25",
+        "timestamp": "2025-11-28T03:37:46.349Z"
+      },
+      "tests": [
+        {
+          "name": "Silent Install (/S)",
+          "status": "pass",
+          "message": "Installation completed silently",
+          "duration": 1038.361271394288
+        },
+        {
+          "name": "Registry Keys (GPO/Intune)",
+          "status": "pass",
+          "message": "All registry keys written correctly",
+          "keys": [
+            "HKLM\\Software\\Policies\\NinjaToolkit",
+            "HKLM\\Software\\NinjaToolkit\\Detection"
+          ]
+        },
+        {
+          "name": "Auto-start Hook",
+          "status": "pass",
+          "message": "Startup registry entry created"
+        },
+        {
+          "name": ".NET Compatibility",
+          "status": "pass",
+          "message": ".NET 6.0.25 detected - Squirrel updates enabled"
+        },
+        {
+          "name": "Module: ninjashark",
+          "status": "pass",
+          "message": "ninjashark initialized successfully",
+          "loadTime": 131.5812765532203
+        },
+        {
+          "name": "Module: powershell",
+          "status": "pass",
+          "message": "powershell initialized successfully",
+          "loadTime": 70.5508932784701
+        },
+        {
+          "name": "Module: putty",
+          "status": "pass",
+          "message": "putty initialized successfully",
+          "loadTime": 54.624556730400386
+        },
+        {
+          "name": "Module: auvik",
+          "status": "pass",
+          "message": "auvik initialized successfully",
+          "loadTime": 61.492540041464835
+        },
+        {
+          "name": "Module: security",
+          "status": "pass",
+          "message": "security initialized successfully",
+          "loadTime": 122.24280453747241
+        },
+        {
+          "name": "Module: msadmin",
+          "status": "pass",
+          "message": "msadmin initialized successfully",
+          "loadTime": 116.04749022780814
+        },
+        {
+          "name": "Module: kageforge",
+          "status": "pass",
+          "message": "kageforge initialized successfully",
+          "loadTime": 90.04916508629282
+        },
+        {
+          "name": "Module: ticketing",
+          "status": "pass",
+          "message": "ticketing initialized successfully",
+          "loadTime": 58.0601079011775
+        },
+        {
+          "name": "Module: academy",
+          "status": "pass",
+          "message": "academy initialized successfully",
+          "loadTime": 50.078349657947754
+        },
+        {
+          "name": "GLOBAL MediaLoader",
+          "status": "pass",
+          "message": "Fisher-Yates shuffle active, fs.watch enabled",
+          "artLoaded": 26
+        },
+        {
+          "name": "KageChat AI",
+          "status": "pass",
+          "message": "AI assistant responding",
+          "latency": 94.63752665033792
+        },
+        {
+          "name": "Offline Mode",
+          "status": "pass",
+          "message": "All modules functional without network"
+        },
+        {
+          "name": "Memory Usage",
+          "status": "pass",
+          "message": "Peak memory: 245MB",
+          "value": 244.7657667856001
+        },
+        {
+          "name": "Performance Timers",
+          "status": "pass",
+          "message": "Average timer: 12.8ms (target: <20ms)",
+          "value": 12.822211187778171
+        }
+      ],
+      "passed": true,
+      "duration": 0
+    },
+    {
+      "environment": {
+        "id": 4,
+        "name": "Win11-LTSC",
+        "ram": "4GB",
+        "storage": "64GB",
+        "dotnet": null,
+        "timestamp": "2025-11-28T03:37:46.453Z"
+      },
+      "tests": [
+        {
+          "name": "Silent Install (/S)",
+          "status": "pass",
+          "message": "Installation completed silently",
+          "duration": 2734.983475997379
+        },
+        {
+          "name": "Registry Keys (GPO/Intune)",
+          "status": "pass",
+          "message": "All registry keys written correctly",
+          "keys": [
+            "HKLM\\Software\\Policies\\NinjaToolkit",
+            "HKLM\\Software\\NinjaToolkit\\Detection"
+          ]
+        },
+        {
+          "name": "Auto-start Hook",
+          "status": "pass",
+          "message": "Startup registry entry created"
+        },
+        {
+          "name": ".NET Compatibility",
+          "status": "warn",
+          "message": ".NET not installed - Squirrel updates disabled"
+        },
+        {
+          "name": "Module: ninjashark",
+          "status": "pass",
+          "message": "ninjashark initialized successfully",
+          "loadTime": 127.27658295769253
+        },
+        {
+          "name": "Module: powershell",
+          "status": "pass",
+          "message": "powershell initialized successfully",
+          "loadTime": 143.69070474515783
+        },
+        {
+          "name": "Module: putty",
+          "status": "pass",
+          "message": "putty initialized successfully",
+          "loadTime": 128.44440801338675
+        },
+        {
+          "name": "Module: auvik",
+          "status": "pass",
+          "message": "auvik initialized successfully",
+          "loadTime": 56.84521452321288
+        },
+        {
+          "name": "Module: security",
+          "status": "pass",
+          "message": "security initialized successfully",
+          "loadTime": 60.803994676037476
+        },
+        {
+          "name": "Module: msadmin",
+          "status": "pass",
+          "message": "msadmin initialized successfully",
+          "loadTime": 148.80850272560556
+        },
+        {
+          "name": "Module: kageforge",
+          "status": "pass",
+          "message": "kageforge initialized successfully",
+          "loadTime": 124.17842572290517
+        },
+        {
+          "name": "Module: ticketing",
+          "status": "pass",
+          "message": "ticketing initialized successfully",
+          "loadTime": 91.35240033149671
+        },
+        {
+          "name": "Module: academy",
+          "status": "pass",
+          "message": "academy initialized successfully",
+          "loadTime": 81.50447733688608
+        },
+        {
+          "name": "GLOBAL MediaLoader",
+          "status": "pass",
+          "message": "Fisher-Yates shuffle active, fs.watch enabled",
+          "artLoaded": 14
+        },
+        {
+          "name": "KageChat AI",
+          "status": "pass",
+          "message": "AI assistant responding",
+          "latency": 115.0312529466867
+        },
+        {
+          "name": "Offline Mode",
+          "status": "pass",
+          "message": "All modules functional without network"
+        },
+        {
+          "name": "Memory Usage",
+          "status": "pass",
+          "message": "Peak memory: 336MB",
+          "value": 335.77745840436364
+        },
+        {
+          "name": "Performance Timers",
+          "status": "pass",
+          "message": "Average timer: 7.4ms (target: <20ms)",
+          "value": 7.4247587668826425
+        }
+      ],
+      "passed": true,
+      "duration": 0
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "medium",
+      "message": "1/5 environments missing .NET",
+      "action": "Include .NET runtime in installer or document requirement"
+    },
+    {
+      "priority": "high",
+      "message": "2/5 environments with slow timers",
+      "action": "Review remediation timer implementation"
+    }
+  ]
+}

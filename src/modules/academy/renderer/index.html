@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ninja Academy - Microsoft Certification Training</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      color: #ffffff;
+      overflow: hidden;
+    }
+
+    #root {
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #4a9eff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .loading-subtitle {
+      margin-top: 10px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Three.js container */
+    #three-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <div id="three-background"></div>
+  <div id="root">
+    <div class="loading-screen">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Ninja Academy</div>
+      <div class="loading-subtitle">Loading Microsoft Certification Training Platform...</div>
+    </div>
+  </div>
+
+  <script>
+    // Expose Electron IPC to renderer process
+    const { ipcRenderer } = require('electron');
+
+    window.electronAPI = {
+      // Question Bank
+      getExams: () => ipcRenderer.invoke('get-exams'),
+      getExamQuestions: (examCode) => ipcRenderer.invoke('get-exam-questions', examCode),
+      getRandomQuestions: (examCode, count) => ipcRenderer.invoke('get-random-questions', examCode, count),
+      getExamStats: (examCode) => ipcRenderer.invoke('get-exam-stats', examCode),
+
+      // Gamification
+      getUserProgress: () => ipcRenderer.invoke('get-user-progress'),
+      getUserStats: () => ipcRenderer.invoke('get-user-stats'),
+      getProgressSummary: () => ipcRenderer.invoke('get-progress-summary'),
+      getAllBadges: () => ipcRenderer.invoke('get-all-badges'),
+      recordAnswer: (questionId, correct, examCode) => ipcRenderer.invoke('record-answer', questionId, correct, examCode),
+
+      // Database
+      getAnswerHistory: (limit) => ipcRenderer.invoke('get-answer-history', limit),
+      getExamStatistics: (examCode) => ipcRenderer.invoke('get-exam-statistics', examCode),
+      getAllExamStatistics: () => ipcRenderer.invoke('get-all-exam-statistics'),
+      startStudySession: (examCode) => ipcRenderer.invoke('start-study-session', examCode),
+      endStudySession: (sessionId, questions, correct, xp) => ipcRenderer.invoke('end-study-session', sessionId, questions, correct, xp),
+      getStudyAnalytics: (days) => ipcRenderer.invoke('get-study-analytics', days),
+      getPerformanceTrends: (days) => ipcRenderer.invoke('get-performance-trends', days),
+
+      // Notes
+      saveNote: (examCode, domain, title, content) => ipcRenderer.invoke('save-note', examCode, domain, title, content),
+      updateNote: (noteId, title, content) => ipcRenderer.invoke('update-note', noteId, title, content),
+      getNotes: (examCode) => ipcRenderer.invoke('get-notes', examCode),
+
+      // Bookmarks
+      bookmarkQuestion: (questionId, examCode, note) => ipcRenderer.invoke('bookmark-question', questionId, examCode, note),
+      removeBookmark: (questionId) => ipcRenderer.invoke('remove-bookmark', questionId),
+      getBookmarkedQuestions: (examCode) => ipcRenderer.invoke('get-bookmarked-questions', examCode),
+
+      // Settings
+      getUserSettings: () => ipcRenderer.invoke('get-user-settings'),
+      updateUserSettings: (settings) => ipcRenderer.invoke('update-user-settings', settings),
+
+      // Media
+      getRandomImage: () => ipcRenderer.invoke('get-random-image'),
+      getRandomVideo: () => ipcRenderer.invoke('get-random-video'),
+      getMediaStats: () => ipcRenderer.invoke('get-media-stats'),
+
+      // Export
+      exportUserData: () => ipcRenderer.invoke('export-user-data')
+    };
+
+    console.log('[Renderer] Ninja Academy renderer process started');
+    console.log('[Renderer] Electron API exposed to window');
+  </script>
+
+  <!-- React app bundle will be injected here by Webpack -->
+  <script src="../renderer/app.jsx"></script>
+</body>
+</html>

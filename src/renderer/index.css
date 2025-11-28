@@ -1,0 +1,96 @@
+/**
+ * Ninja Toolkit v11 - Base Styles
+ * Feudal Tokyo Dark Theme with Tailwind CSS
+ */
+
+@import 'tailwindcss';
+
+/* Reset and base styles */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Root element */
+:root {
+  --ninja-gray: #0a0e27;
+  --shadow-gray: #1a1f3a;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+}
+
+/* Body styling */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  background-color: var(--ninja-gray);
+  color: #e5e7eb;
+}
+
+/* Code blocks */
+code,
+pre {
+  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Root container */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar styling for Webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--shadow-gray);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--emerald-600);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--emerald-500);
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--emerald-600);
+  color: white;
+}
+
+/* Focus outline for accessibility */
+:focus-visible {
+  outline: 2px solid var(--emerald-500);
+  outline-offset: 2px;
+}
+
+/* Disable default button styles */
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Link styling */
+a {
+  color: var(--emerald-500);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}

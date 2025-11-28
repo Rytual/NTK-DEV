@@ -1,0 +1,46 @@
+appId: com.ninjatoolkit.app
+productName: NinjaToolkit
+copyright: Copyright 2025 Ninja Toolkit Team
+
+directories:
+  output: release
+  buildResources: assets
+
+files:
+  - "dist/**/*"
+  - "src/backend/**/*.js"
+  - "src/core/**/*.js"
+  - "src/preload.js"
+  - "package.json"
+  - "!node_modules/.cache/**"
+  - "!**/*.ts"
+  - "!**/*.tsx"
+  - "!**/*.md"
+  - "!**/*.log"
+  - "!.git/**"
+  - "!.claude/**"
+  - "!.vscode/**"
+
+extraResources:
+  - from: "art"
+    to: "art"
+    filter:
+      - "**/*"
+  - from: "assets"
+    to: "assets"
+    filter:
+      - "**/*"
+
+win:
+  target:
+    - target: portable
+      arch:
+        - x64
+  icon: assets/icons/icon.ico
+  artifactName: "${productName}-${version}-portable.${ext}"
+
+portable:
+  artifactName: "${productName}-${version}-portable.${ext}"
+
+asar: true
+compression: store
