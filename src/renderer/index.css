@@ -1,96 +1,262 @@
-/**
- * Ninja Toolkit v11 - Base Styles
- * Feudal Tokyo Dark Theme with Tailwind CSS
- */
-
 @import 'tailwindcss';
 
-/* Reset and base styles */
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* === Theme Configuration === */
+@theme {
+  /* Light theme colors (defaults) */
+  --color-background: oklch(100% 0 0);
+  --color-background-secondary: oklch(98% 0.01 250);
+  --color-background-tertiary: oklch(96% 0.01 250);
+  --color-foreground: oklch(15% 0.02 260);
+  --color-foreground-muted: oklch(50% 0.02 260);
+
+  --color-primary: oklch(65% 0.2 165);
+  --color-primary-foreground: oklch(100% 0 0);
+  --color-primary-hover: oklch(60% 0.2 165);
+
+  --color-accent: oklch(55% 0.2 260);
+  --color-accent-foreground: oklch(100% 0 0);
+  --color-accent-hover: oklch(50% 0.2 260);
+
+  --color-surface: oklch(100% 0 0);
+  --color-surface-hover: oklch(98% 0.01 250);
+  --color-surface-active: oklch(96% 0.01 250);
+
+  --color-border: oklch(91% 0.01 260);
+  --color-border-hover: oklch(85% 0.01 260);
+
+  --color-destructive: oklch(55% 0.25 25);
+  --color-destructive-foreground: oklch(100% 0 0);
+
+  --color-danger: oklch(55% 0.25 25);
+  --color-danger-foreground: oklch(100% 0 0);
+
+  --color-success: oklch(60% 0.2 145);
+  --color-success-foreground: oklch(100% 0 0);
+
+  --color-warning: oklch(75% 0.2 85);
+  --color-warning-foreground: oklch(15% 0.02 85);
+
+  --color-info: oklch(60% 0.2 235);
+  --color-info-foreground: oklch(100% 0 0);
+
+  /* Font families */
+  --font-family-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+  /* Border radius */
+  --radius-4xl: 2rem;
+
+  /* Custom animations */
+  --animate-fade-in: fade-in 0.2s ease-out;
+  --animate-spin-slow: spin 3s linear infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+
+  /* Custom shadows */
+  --shadow-glow: 0 0 20px oklch(65% 0.2 165 / 0.15);
+  --shadow-glow-lg: 0 0 40px oklch(65% 0.2 165 / 0.2);
+  --shadow-inner-glow: inset 0 1px 0 0 oklch(100% 0 0 / 0.05);
+  --shadow-elevation-1: 0 1px 3px oklch(0% 0 0 / 0.12), 0 1px 2px oklch(0% 0 0 / 0.24);
+  --shadow-elevation-2: 0 3px 6px oklch(0% 0 0 / 0.15), 0 2px 4px oklch(0% 0 0 / 0.12);
+  --shadow-elevation-3: 0 10px 20px oklch(0% 0 0 / 0.15), 0 3px 6px oklch(0% 0 0 / 0.10);
 }
 
-/* Root element */
-:root {
-  --ninja-gray: #0a0e27;
-  --shadow-gray: #1a1f3a;
-  --emerald-500: #10b981;
-  --emerald-600: #059669;
+/* === Keyframes === */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Body styling */
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px oklch(65% 0.2 165 / 0.2); }
+  50% { box-shadow: 0 0 40px oklch(65% 0.2 165 / 0.4); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* === Dark Theme === */
+.dark {
+  --color-background: oklch(10% 0.03 260);
+  --color-background-secondary: oklch(12% 0.03 260);
+  --color-background-tertiary: oklch(15% 0.03 260);
+  --color-foreground: oklch(98% 0.01 250);
+  --color-foreground-muted: oklch(60% 0.02 260);
+
+  --color-primary: oklch(65% 0.2 165);
+  --color-primary-foreground: oklch(100% 0 0);
+  --color-primary-hover: oklch(70% 0.2 165);
+
+  --color-accent: oklch(60% 0.2 260);
+  --color-accent-foreground: oklch(100% 0 0);
+  --color-accent-hover: oklch(65% 0.2 260);
+
+  --color-surface: oklch(15% 0.03 260);
+  --color-surface-hover: oklch(18% 0.03 260);
+  --color-surface-active: oklch(21% 0.03 260);
+
+  --color-border: oklch(22% 0.03 260);
+  --color-border-hover: oklch(30% 0.03 260);
+
+  --color-destructive: oklch(55% 0.2 25);
+  --color-destructive-foreground: oklch(100% 0 0);
+
+  --color-danger: oklch(55% 0.2 25);
+  --color-danger-foreground: oklch(100% 0 0);
+
+  --color-success: oklch(60% 0.2 145);
+  --color-success-foreground: oklch(100% 0 0);
+
+  --color-warning: oklch(75% 0.2 85);
+  --color-warning-foreground: oklch(15% 0.02 85);
+
+  --color-info: oklch(60% 0.2 235);
+  --color-info-foreground: oklch(100% 0 0);
+}
+
+/* === Base Styles === */
+* {
+  border-color: var(--color-border);
+}
+
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  background-color: var(--ninja-gray);
-  color: #e5e7eb;
 }
 
-/* Code blocks */
-code,
-pre {
-  font-family: 'Fira Code', source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-family-sans);
+  overflow: hidden;
 }
 
-/* Root container */
 #root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
-/* Scrollbar styling for Webkit browsers */
+/* === Scrollbar === */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 0.5rem;
+  height: 0.5rem;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--shadow-gray);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--emerald-600);
-  border-radius: 4px;
+  background: var(--color-border);
+  border-radius: 9999px;
+  transition: background-color 0.2s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--emerald-500);
+  background: var(--color-border-hover);
 }
 
-/* Selection styling */
-::selection {
-  background-color: var(--emerald-600);
-  color: white;
-}
-
-/* Focus outline for accessibility */
+/* === Focus Styles === */
 :focus-visible {
-  outline: 2px solid var(--emerald-500);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary), 0 0 0 4px var(--color-background);
 }
 
-/* Disable default button styles */
-button {
-  background: none;
-  border: none;
-  cursor: pointer;
+/* === Selection === */
+::selection {
+  background-color: oklch(65% 0.2 165 / 0.3);
+  color: var(--color-foreground);
 }
 
-/* Link styling */
-a {
-  color: var(--emerald-500);
-  text-decoration: none;
+/* === Custom Classes === */
+.glass {
+  background-color: color-mix(in oklch, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in oklch, var(--color-border) 50%, transparent);
 }
 
-a:hover {
-  text-decoration: underline;
+.gradient-text {
+  background: linear-gradient(to right, var(--color-primary), var(--color-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.skeleton {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background-color: var(--color-surface-hover);
+  border-radius: 0.25rem;
+}
+
+.card-hover {
+  transition: all 0.2s;
+}
+
+.card-hover:hover {
+  box-shadow: var(--shadow-elevation-2);
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+}
+
+.nav-active {
+  background-color: color-mix(in oklch, var(--color-primary) 10%, transparent);
+  color: var(--color-primary);
+  border-left: 2px solid var(--color-primary);
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+}
+
+.status-online {
+  background-color: var(--color-success);
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.status-offline {
+  background-color: var(--color-destructive);
+}
+
+.status-warning {
+  background-color: var(--color-warning);
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
