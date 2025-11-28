@@ -1,184 +1,374 @@
-# Ninja Toolkit v11
+<p align="center">
+  <img src="assets/logo.png" alt="Ninja Toolkit" width="120" height="120">
+</p>
 
-**Enterprise MSP Management Suite**
+<h1 align="center">Ninja Toolkit v11</h1>
 
-A comprehensive desktop application for Managed Service Providers (MSPs) that unifies network monitoring, security scanning, remote access, ticketing, and AI-powered automation into a single integrated platform.
+<p align="center">
+  <strong>Enterprise MSP Management Suite</strong>
+  <br>
+  <em>Unified IT Operations Platform with AI-Powered Automation</em>
+</p>
+
+<p align="center">
+  <a href="#features">Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#modules">Modules</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#configuration">Configuration</a>
+</p>
 
 ---
 
-## Overview
+## Executive Summary
 
-Ninja Toolkit v11 is a professional-grade IT management solution designed for MSP technicians and IT administrators. Built on modern web technologies within a native desktop shell, it provides a cohesive workflow for daily IT operations without context-switching between multiple applications.
+Ninja Toolkit v11 is a comprehensive desktop application engineered for Managed Service Providers (MSPs) that consolidates network monitoring, security operations, remote access, ticketing, and AI-powered automation into a unified platform. Built on modern web technologies within a native desktop shell, it eliminates context-switching between disparate tools and streamlines daily IT operations.
 
-### Key Capabilities
+### Business Value
 
-- **Network Analysis**: Real-time packet capture and protocol analysis
-- **Terminal Emulation**: PowerShell and SSH/Telnet sessions with session persistence
-- **Infrastructure Monitoring**: Network topology mapping and device discovery
-- **Security Operations**: Vulnerability scanning and threat detection
-- **Cloud Administration**: Microsoft 365 and Azure resource management
-- **AI Automation**: Multi-provider AI integration for task automation
-- **Ticket Management**: ConnectWise PSA integration for service desk operations
-- **Training Platform**: Built-in certification and training module
+| Metric | Impact |
+|--------|--------|
+| **Tool Consolidation** | Replaces 8+ separate applications |
+| **Workflow Efficiency** | Cross-module automation chains |
+| **Compliance Coverage** | 7 enterprise frameworks supported |
+| **AI Integration** | Multi-provider orchestration |
+| **Deployment** | Silent install via GPO/Intune |
 
 ---
 
 ## Technology Stack
 
-| Layer | Technology | Version |
-|-------|------------|---------|
-| Runtime | Electron | 39.2.4 |
-| UI Framework | React | 19.2.0 |
-| Language | TypeScript | 5.9.3 |
-| Build System | Vite | 7.2.4 |
-| Packaging | Electron Forge | 7.4.0 |
-| Styling | Tailwind CSS | 4.0.17 |
-| Animation | Framer Motion | 11.15.0 |
-| Backend | Express | 4.21.2 |
-| Platform | Windows, macOS, Linux | - |
+### Core Platform
 
-### Architecture
+| Component | Technology | Version | Purpose |
+|-----------|------------|---------|---------|
+| **Runtime** | Electron | 39.2.4 | Cross-platform desktop shell |
+| **UI Framework** | React | 19.2.0 | Component-based interface |
+| **Language** | TypeScript | 5.9.3 | Type-safe development |
+| **Build System** | Vite | 7.2.4 | Fast HMR development |
+| **Packaging** | Electron Forge | 7.4.0 | Installer generation |
+| **Styling** | Tailwind CSS | 4.0.17 | Utility-first CSS (OKLCH) |
+| **Animation** | Framer Motion | 11.15.0 | Physics-based motion |
+| **Backend** | Express | 4.21.2 | API server |
 
-The application follows a 3-pane layout architecture optimized for IT workflows:
+### AI & Cloud Integration
+
+| Provider | Package | Purpose |
+|----------|---------|---------|
+| **Anthropic** | @anthropic-ai/sdk | Claude API integration |
+| **OpenAI** | openai | GPT models |
+| **Google** | @google-cloud/vertexai | Gemini models |
+| **Microsoft** | @azure/msal-node | Azure AD authentication |
+| **Microsoft** | @microsoft/microsoft-graph-client | Graph API |
+
+### Native Capabilities
+
+| Module | Dependency | Function |
+|--------|------------|----------|
+| **Packet Capture** | cap (libpcap) | Live network analysis |
+| **Terminal PTY** | node-pty | Shell emulation |
+| **Serial Console** | serialport | Hardware access |
+| **SNMP Discovery** | snmp-native | Network scanning |
+| **Local Database** | better-sqlite3 | WAL-mode persistence |
+| **Credentials** | keytar | OS keychain integration |
+
+---
+
+## Architecture
+
+### Three-Pane Layout
+
+Optimized for IT workflow efficiency with collapsible panels:
 
 ```
-+------------------+---------------------------+------------------+
-|                  |                           |                  |
-|    Navigation    |      Module Content       |    AI Assistant  |
-|    (Collapsible) |      (Lazy-loaded)        |    (Collapsible) |
-|                  |                           |                  |
-+------------------+---------------------------+------------------+
-|                         Status Bar                              |
-+----------------------------------------------------------------+
+┌─────────────────────────────────────────────────────────────────────┐
+│                           Title Bar                                  │
+├──────────┬────────────────────────────────────┬─────────────────────┤
+│          │                                    │                     │
+│  Blade   │                                    │      Kage Chat      │
+│   Nav    │         Module Content             │     AI Assistant    │
+│          │         (Lazy-loaded)              │                     │
+│ 64-280px │                                    │      320-480px      │
+│          │                                    │                     │
+├──────────┴────────────────────────────────────┴─────────────────────┤
+│  Status Bar: Performance Metrics | Connection Status | Notifications │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                         Renderer Process                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ │
+│  │   React     │  │   Router    │  │   State     │  │  Components │ │
+│  │   19.2.0    │  │    v6       │  │   Context   │  │   Library   │ │
+│  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘ │
+│         └─────────────────┼─────────────────┼─────────────────┘      │
+│                           │                 │                        │
+│                    ┌──────▼─────────────────▼──────┐                │
+│                    │        IPC Bridge             │                │
+│                    │   (contextBridge API)         │                │
+│                    └──────────────┬────────────────┘                │
+└───────────────────────────────────┼─────────────────────────────────┘
+                                    │
+┌───────────────────────────────────┼─────────────────────────────────┐
+│                           Main Process                               │
+│                    ┌──────────────▼────────────────┐                │
+│                    │      IPC Handlers             │                │
+│                    │   40+ registered channels     │                │
+│                    └──────────────┬────────────────┘                │
+│         ┌─────────────────────────┼─────────────────────────────┐   │
+│         │                         │                             │   │
+│  ┌──────▼──────┐  ┌───────────────▼───────────────┐  ┌─────────▼─┐ │
+│  │ MediaLoader │  │      Module Backends          │  │  Express  │ │
+│  │   (Core)    │  │  NinjaShark | PowerShell     │  │  Backend  │ │
+│  │             │  │  PuTTY | NetworkMap | etc.    │  │  :3001    │ │
+│  └─────────────┘  └───────────────────────────────┘  └───────────┘ │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Modules
 
-### 1. NinjaShark - Network Analysis
-Packet capture and analysis engine for network troubleshooting and security investigation.
-- Live packet capture with configurable filters
-- Protocol decode (TCP, UDP, HTTP, DNS, etc.)
-- Session reconstruction and flow analysis
-- Export to PCAP format
+### Module Overview
 
-### 2. PowerShell Terminal
-Integrated PowerShell terminal with enhanced features for IT administration.
-- Multi-tab terminal sessions
-- Command history with search
-- Script snippet library
-- Output formatting and export
+| # | Module | Purpose | Native Deps |
+|---|--------|---------|-------------|
+| 1 | **NinjaShark** | Network packet capture & analysis | cap (libpcap) |
+| 2 | **PowerShell** | Terminal emulation with AI tagging | node-pty |
+| 3 | **PuTTY** | SSH/Telnet/Serial remote access | serialport |
+| 4 | **NetworkMap** | Infrastructure topology & monitoring | snmp-native |
+| 5 | **Security** | Vulnerability scanning & compliance | — |
+| 6 | **MSAdmin** | Microsoft 365/Azure administration | — |
+| 7 | **KageForge** | AI provider management & routing | — |
+| 8 | **Ticketing** | ConnectWise PSA integration | — |
+| 9 | **Academy** | Training & certification platform | better-sqlite3 |
+| 10 | **MediaLoader** | Global theming & media rotation | — |
+| 11 | **KageChat** | AI assistant panel | — |
 
-### 3. Remote Access (PuTTY)
-SSH and Telnet client for remote device management.
-- Session manager with saved connections
-- Key-based authentication support
-- Serial console support
-- Session logging
+### Cross-Module Integration Chains
 
-### 4. Network Map (Auvik)
-Infrastructure monitoring and network topology visualization.
-- Automated network discovery
-- Device inventory management
-- Performance monitoring
-- Alert management
+Modules are designed to work together through automated workflow chains:
 
-### 5. Security Suite
-Vulnerability scanning and security posture assessment.
-- Port scanning and service detection
-- Vulnerability assessment
-- Compliance checking
-- Security reporting
+```
+Security Remediation Chain:
+NinjaShark → Security → NetworkMap → PuTTY → Ticketing
+(anomaly)    (alert)    (topology)   (fix)    (document)
 
-### 6. Microsoft Administration
-Microsoft 365 and Azure administration interface.
-- User and group management
-- License administration
-- Azure resource monitoring
-- Conditional access policies
+Azure Reporting Chain:
+CSV Import → MSAdmin → PowerShell → PDF Export → Email
+(pricing)    (calc)    (script)     (report)    (send)
 
-### 7. KageForge - AI Manager
-Multi-provider AI integration for automation and assistance.
-- Provider configuration (OpenAI, Anthropic, Azure, Google, Local)
-- Token usage tracking
-- Custom prompt templates
-- API key management
+Training Content Chain:
+NinjaShark → Academy
+(hex data)   (PBQ generation via AI)
 
-### 8. Ticketing
-ConnectWise PSA integration for service desk operations.
-- Ticket queue management
-- Time entry tracking
-- SLA monitoring
-- Customer communication
-
-### 9. Academy
-Training and certification platform for team development.
-- Interactive training modules
-- Progress tracking
-- Certification management
-- Knowledge base integration
-
-### 10. MediaLoader
-Global media management system for application theming.
-- Dynamic background system
-- Image and video rotation
-- Hot-reload on file changes
-- Gradient fallback system
-
-### 11. KageChat
-AI-powered assistant integrated throughout the application.
-- Context-aware responses
-- Module-specific assistance
-- Query history
-- Follow-up suggestions
+Diagnostic Workflow Chain:
+Ticketing → PowerShell → Log Collection → Draft Response
+(ticket)    (scripts)    (aggregate)     (AI-generated)
+```
 
 ---
 
-## System Requirements
+## Module Details
 
-### Minimum Requirements
-| Component | Requirement |
-|-----------|-------------|
-| OS | Windows 10 (1903+), macOS 10.15+, Ubuntu 20.04+ |
-| RAM | 8 GB |
-| Storage | 2 GB available |
-| Display | 1280 x 720 |
-| Network | Broadband connection |
+### 1. NinjaShark - Network Analysis
 
-### Recommended Requirements
-| Component | Requirement |
-|-----------|-------------|
-| OS | Windows 11, macOS 14+, Ubuntu 24.04 |
-| RAM | 16 GB |
-| Storage | 4 GB SSD |
-| Display | 1920 x 1080 |
-| Network | Gigabit connection |
+Real-time packet capture and protocol analysis engine.
 
-### Runtime Dependencies
-- Node.js 24.x (for development)
-- .NET 6.0+ (for auto-updater on Windows)
-- Visual C++ Redistributable 2019+ (Windows)
+| Feature | Description |
+|---------|-------------|
+| **Live Capture** | Interface selection, BPF filters |
+| **Protocol Decode** | TCP, UDP, HTTP, DNS, TLS, ICMP |
+| **Session Tracking** | Flow reconstruction, conversation view |
+| **Anomaly Detection** | AI-assisted pattern analysis |
+| **Export** | PCAP format, CSV statistics |
+
+**Performance Target:** 100,000 packets with virtual scrolling
+
+### 2. PowerShell Terminal
+
+Integrated terminal with AI-powered script management.
+
+| Feature | Description |
+|---------|-------------|
+| **Multi-tab Sessions** | Concurrent shell instances |
+| **AI Tagging** | Automatic script summaries |
+| **Command History** | Searchable with fuzzy match |
+| **Snippet Library** | Saved script templates |
+| **Output Export** | JSON, text, HTML formats |
+
+**Performance Target:** <100ms echo latency
+
+### 3. PuTTY/Remote Access
+
+SSH, Telnet, and Serial console client.
+
+| Feature | Description |
+|---------|-------------|
+| **Connection Manager** | Saved sessions, folders |
+| **Authentication** | Password, key-based, agent |
+| **Macro System** | Automated command sequences |
+| **Session Logging** | Timestamped transcripts |
+| **Serial Console** | COM port access |
+
+### 4. NetworkMap (Auvik Integration)
+
+Network topology visualization and monitoring.
+
+| Feature | Description |
+|---------|-------------|
+| **Auto-Discovery** | SNMP, ping sweep, ARP |
+| **3D Topology** | Three.js visualization |
+| **Device Inventory** | Asset tracking, tagging |
+| **Performance Graphs** | Bandwidth, latency, errors |
+| **Alert Integration** | Threshold-based notifications |
+
+**Performance Target:** 30fps 3D rendering
+
+### 5. Security Suite
+
+Enterprise vulnerability scanning and compliance.
+
+| Framework | Coverage |
+|-----------|----------|
+| **PCI-DSS v4.0** | 78+ sub-requirements |
+| **HIPAA** | Security Rule (45 CFR 160, 162, 164) |
+| **ISO 27001:2022** | 93 controls, 14 domains |
+| **SOC 2** | Trust Service Criteria |
+| **GDPR** | Article 32 technical measures |
+| **CIS Controls v8** | 18 controls, 153 safeguards |
+| **NIST CSF** | Cybersecurity Framework |
+
+### 6. Microsoft Administration
+
+Microsoft 365 and Azure resource management.
+
+| Feature | Description |
+|---------|-------------|
+| **User Management** | Create, modify, license |
+| **Group Administration** | Security, distribution, M365 |
+| **License Tracking** | Usage, assignments, costs |
+| **Azure Canvas** | Resource visualization |
+| **Conditional Access** | Policy management |
+| **Pricing Calculator** | MSP margin calculations |
+
+### 7. KageForge - AI Manager
+
+Multi-provider AI orchestration platform.
+
+| Provider | Models |
+|----------|--------|
+| **Anthropic** | Claude 3.5 Sonnet, Claude 3 Opus |
+| **OpenAI** | GPT-4o, GPT-4 Turbo |
+| **Google** | Gemini Pro, Gemini Ultra |
+| **Azure** | Azure OpenAI deployments |
+| **Local** | Ollama, LM Studio |
+
+**Features:**
+- Automatic failover between providers
+- Token usage tracking and budgets
+- Custom prompt template library
+- Self-configuration capabilities
+
+### 8. Ticketing (ConnectWise)
+
+PSA integration for service desk operations.
+
+| Feature | Description |
+|---------|-------------|
+| **Queue Management** | Filter, sort, assign |
+| **Time Entry** | Tracking with timesheet export |
+| **SLA Monitoring** | Response/resolution tracking |
+| **AI Drafts** | Suggested responses |
+| **Escalation** | Workflow triggers |
+
+### 9. Academy
+
+Gamified training and certification platform.
+
+| Feature | Description |
+|---------|-------------|
+| **Course Library** | Interactive modules |
+| **Progress Tracking** | Completion, scores |
+| **PBQ Generation** | AI-created questions |
+| **Certification** | PDF certificates |
+| **Rank System** | Genin → Chunin → Jonin |
+
+### 10. MediaLoader
+
+Global theming and media management.
+
+| Feature | Description |
+|---------|-------------|
+| **Background Rotation** | Timed image/video cycling |
+| **Hot Reload** | File system watch |
+| **Format Support** | PNG, JPG, WebP, MP4, WebM |
+| **Fallback System** | Gradient backgrounds |
+
+### 11. KageChat
+
+AI assistant integrated throughout the application.
+
+| Feature | Description |
+|---------|-------------|
+| **Context Awareness** | Module-specific assistance |
+| **Query History** | Searchable conversation log |
+| **Follow-up Suggestions** | Contextual prompts |
+| **Remediation Flows** | Structured workflows |
+
+---
+
+## Performance Specifications
+
+| Metric | Target | Implementation |
+|--------|--------|----------------|
+| **Module Swap** | <100ms | React useTransition |
+| **Memory (Dev)** | <500MB | Tree-shaking, lazy loading |
+| **Memory (Prod)** | <400MB | Production optimizations |
+| **Animation CPU** | <5% | requestAnimationFrame throttle |
+| **3D Rendering** | 30fps | Three.js throttle |
+| **Virtual Scroll** | 100k items | react-virtualized |
+| **Echo Latency** | <100ms | xterm.js optimization |
+| **Initial Load** | <3s | Code splitting |
 
 ---
 
 ## Installation
 
-### Pre-built Installer (Recommended)
+### System Requirements
 
-Download the latest installer from the Releases page:
-- **Windows**: `NinjaToolkit-Setup-11.0.0.exe`
-- **macOS**: `NinjaToolkit-11.0.0.dmg`
-- **Linux**: `ninja-toolkit_11.0.0_amd64.deb`
+| Component | Minimum | Recommended |
+|-----------|---------|-------------|
+| **OS** | Windows 10 (1903+) | Windows 11 |
+| | macOS 10.15+ | macOS 14+ |
+| | Ubuntu 20.04+ | Ubuntu 24.04 |
+| **RAM** | 8 GB | 16 GB |
+| **Storage** | 2 GB | 4 GB SSD |
+| **Display** | 1280×720 | 1920×1080 |
+| **Network** | Broadband | Gigabit |
 
-### Silent Installation (Enterprise Deployment)
+### Pre-built Installers
+
+| Platform | Installer | Size |
+|----------|-----------|------|
+| **Windows** | `NinjaToolkit-Setup-11.0.0.exe` | ~180 MB |
+| **macOS** | `NinjaToolkit-11.0.0.dmg` | ~190 MB |
+| **Linux** | `ninja-toolkit_11.0.0_amd64.deb` | ~170 MB |
+
+### Enterprise Deployment
 
 ```powershell
-# Windows - Silent install with GPO/Intune support
-NinjaToolkit-Setup-11.0.0.exe /S /D=C:\Program Files\NinjaToolkit
+# Silent install (GPO/Intune compatible)
+NinjaToolkit-Setup-11.0.0.exe /S /D="C:\Program Files\NinjaToolkit"
 
-# Uninstall
+# Silent uninstall
 NinjaToolkit-Setup-11.0.0.exe /S /uninstall
+
+# MSI deployment (alternate)
+msiexec /i NinjaToolkit-11.0.0.msi /qn INSTALLDIR="C:\Program Files\NinjaToolkit"
 ```
 
 ### Build from Source
@@ -191,10 +381,13 @@ cd NTK-DEV
 # Install dependencies
 npm install --legacy-peer-deps
 
-# Development mode
+# Development mode with hot reload
 npm start
 
-# Build installer
+# Production build
+npm run package
+
+# Generate installers
 npm run make
 ```
 
@@ -204,118 +397,150 @@ npm run make
 
 ### Environment Variables
 
-Create a `.env` file in the project root:
+Create `.env` in the project root:
 
 ```ini
-# AI Provider Keys
-ANTHROPIC_API_KEY=sk-ant-...
+# ═══════════════════════════════════════════════════════════════════
+# AI PROVIDER CONFIGURATION
+# ═══════════════════════════════════════════════════════════════════
+ANTHROPIC_API_KEY=sk-ant-api03-...
 OPENAI_API_KEY=sk-...
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/credentials.json
 
-# Microsoft Integration
-AZURE_CLIENT_ID=...
-AZURE_TENANT_ID=...
+# ═══════════════════════════════════════════════════════════════════
+# MICROSOFT INTEGRATION
+# ═══════════════════════════════════════════════════════════════════
+AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+AZURE_TENANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 AZURE_CLIENT_SECRET=...
 
-# ConnectWise Integration
+# ═══════════════════════════════════════════════════════════════════
+# CONNECTWISE PSA
+# ═══════════════════════════════════════════════════════════════════
 CONNECTWISE_API_URL=https://api-na.myconnectwise.net
-CONNECTWISE_COMPANY_ID=...
+CONNECTWISE_COMPANY_ID=yourcompany
 CONNECTWISE_PUBLIC_KEY=...
 CONNECTWISE_PRIVATE_KEY=...
 
-# Application Settings
+# ═══════════════════════════════════════════════════════════════════
+# APPLICATION SETTINGS
+# ═══════════════════════════════════════════════════════════════════
 PORT=3001
 NODE_ENV=production
+LOG_LEVEL=info
 ```
 
 ### Media Assets
 
-Place custom background images and videos in the `/art` directory:
+Place custom backgrounds in the `/art` directory:
 
 ```
 art/
-├── images/    # PNG, JPG, WebP, SVG, GIF, BMP
-└── videos/    # MP4, WebM, MOV, AVI, MKV
+├── images/          # PNG, JPG, WebP, SVG, GIF, BMP
+│   ├── background-1.png
+│   └── background-2.jpg
+└── videos/          # MP4, WebM, MOV, AVI, MKV
+    ├── ambient-1.mp4
+    └── ambient-2.webm
 ```
 
 Files are automatically detected and rotated during application use.
 
 ---
 
-## Development
-
-### Project Structure
+## Project Structure
 
 ```
 ninja-toolkit/
 ├── src/
-│   ├── main.ts              # Electron main process
-│   ├── preload.js           # IPC bridge
-│   ├── renderer/            # React application
-│   ├── components/          # Shared UI components
-│   ├── modules/             # Feature modules
-│   ├── backend/             # Express server
-│   └── types/               # TypeScript definitions
-├── art/                     # Media assets
-├── assets/                  # Static assets
-├── build/                   # Build configuration
-├── scripts/                 # Build scripts
-└── docs/                    # Documentation
+│   ├── main.ts                 # Electron main process (892 lines)
+│   ├── preload.js              # IPC bridge (40+ channels)
+│   ├── renderer/
+│   │   ├── App.tsx             # Main React application
+│   │   ├── main.tsx            # React bootstrap
+│   │   └── index.css           # Tailwind v4 theme
+│   ├── components/
+│   │   ├── BladeNav/           # Navigation sidebar
+│   │   ├── ContentRouter/      # Module lazy loading
+│   │   ├── KageChat/           # AI assistant panel
+│   │   ├── Splash/             # Loading screen
+│   │   └── ui/                 # Component library
+│   ├── modules/
+│   │   ├── ninjashark/         # Packet capture
+│   │   ├── powershell/         # Terminal
+│   │   ├── putty/              # Remote access
+│   │   ├── auvik/              # Network map
+│   │   ├── security/           # Vulnerability scanning
+│   │   ├── msadmin/            # Microsoft admin
+│   │   ├── kageforge/          # AI management
+│   │   ├── ticketing/          # ConnectWise
+│   │   └── academy/            # Training
+│   ├── backend/
+│   │   ├── server.ts           # Express API
+│   │   └── mediaLoaderBridge.js
+│   └── types/                  # TypeScript definitions
+├── art/                        # Media assets
+├── assets/                     # Static assets
+├── build/                      # Build configuration
+├── scripts/                    # Build scripts
+├── docs/                       # Documentation
+│   ├── SESSION-LOG-*.md        # Development logs
+│   ├── DEBUGGING-JOURNAL.md    # Issue tracking
+│   ├── DEVELOPMENT-ROADMAP.md  # Phase planning
+│   └── MODULE-DEPENDENCY-MATRIX.md
+├── forge.config.cjs            # Electron Forge config
+├── vite.config.ts              # Vite configuration
+├── tailwind.config.js          # Tailwind theme
+├── tsconfig.json               # TypeScript config
+└── package.json                # Dependencies
 ```
-
-### Development Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm start` | Launch in development mode |
-| `npm run backend` | Start backend server |
-| `npm run typecheck` | TypeScript validation |
-| `npm run lint` | ESLint code analysis |
-| `npm run package` | Create application package |
-| `npm run make` | Build platform installers |
-
-### Contributing
-
-1. Create a feature branch from `main`
-2. Implement changes with appropriate tests
-3. Update documentation as needed
-4. Submit pull request with detailed description
 
 ---
 
 ## Security
 
-### Security Features
-- Context isolation enabled
-- Node integration disabled in renderer
-- Input sanitization on all API endpoints
-- SQL injection protection via prepared statements
-- Encrypted credential storage
-- Session isolation
+### Security Architecture
 
-### Reporting Vulnerabilities
+| Layer | Implementation |
+|-------|----------------|
+| **Context Isolation** | Enabled (Electron best practice) |
+| **Node Integration** | Disabled in renderer |
+| **IPC Security** | Explicit channel allowlist |
+| **Input Validation** | Server-side sanitization |
+| **SQL Protection** | Prepared statements only |
+| **Credential Storage** | OS keychain (keytar) |
+| **Session Isolation** | Per-module sandboxing |
+
+### Vulnerability Reporting
 
 Report security vulnerabilities via private disclosure to the development team. Do not create public issues for security concerns.
 
 ---
 
-## Performance
+## Development Status
 
-### Benchmarks
+### Current Phase: Foundation Complete
 
-| Metric | Target | Typical |
-|--------|--------|---------|
-| Module switch | < 100ms | 40-80ms |
-| Memory usage | < 500MB | 380-450MB |
-| Animation CPU | < 5% | 3-4% |
-| Initial load | < 3s | 2-2.5s |
+| Phase | Status | Progress |
+|-------|--------|----------|
+| **Phase 1: Foundation** | COMPLETE | 100% |
+| **Phase 2: IPC Bridge** | NEXT | 0% |
+| **Phase 3: Core Systems** | Pending | 0% |
+| **Phase 4: Backend Bundling** | Pending | 0% |
+| **Phase 5: Module Verification** | Pending | 0% |
+| **Phase 6: UI Integration** | Pending | 0% |
+| **Phase 7: Native Modules** | Pending | 0% |
+| **Phase 8: Testing & QA** | Pending | 0% |
+| **Phase 9: Production Build** | Pending | 0% |
 
-### Optimization
+### Recent Commits
 
-- Lazy loading for all modules
-- Code splitting with manual chunks
-- Virtual scrolling for large datasets
-- Debounced API calls
-- Connection pooling
+| Commit | Description | Date |
+|--------|-------------|------|
+| `62cc213` | Merge feature/ui-rebuild to main | 2025-11-28 |
+| `a5d283b` | Phase 1 foundation documentation | 2025-11-28 |
+| `b428359` | Complete UI system rebuild (Tailwind v4) | 2025-11-28 |
+| `16bcafb` | Initial commit: State preservation baseline | 2025-11-28 |
 
 ---
 
@@ -325,40 +550,61 @@ Report security vulnerabilities via private disclosure to the development team. 
 
 **Application fails to start**
 ```bash
-# Clear Vite cache
+# Clear build cache
 rm -rf .vite node_modules/.vite
 
 # Reinstall dependencies
 npm ci --legacy-peer-deps
 
-# Start application
+# Restart
 npm start
 ```
 
-**Native module errors**
+**Native module compilation errors**
 ```bash
-# Rebuild native modules for current platform
+# Install Visual Studio Build Tools (Windows)
+winget install Microsoft.VisualStudio.2022.BuildTools
+
+# Rebuild native modules
 npm run rebuild
 ```
 
 **TypeScript errors**
 ```bash
-# Run type check to identify issues
 npm run typecheck
 ```
 
-### Logs
+### Log Locations
 
-Application logs are stored in:
-- **Windows**: `%APPDATA%\ninja-toolkit\logs`
-- **macOS**: `~/Library/Logs/ninja-toolkit`
-- **Linux**: `~/.config/ninja-toolkit/logs`
+| Platform | Path |
+|----------|------|
+| **Windows** | `%APPDATA%\ninja-toolkit\logs` |
+| **macOS** | `~/Library/Logs/ninja-toolkit` |
+| **Linux** | `~/.config/ninja-toolkit/logs` |
+
+---
+
+## Contributing
+
+1. Create feature branch from `main`
+2. Implement changes with tests
+3. Update documentation
+4. Submit pull request with description
+
+### Branch Strategy
+
+| Branch | Purpose |
+|--------|---------|
+| `main` | Stable release |
+| `feature/*` | New features |
+| `fix/*` | Bug fixes |
+| `release/*` | Release candidates |
 
 ---
 
 ## License
 
-Proprietary - All rights reserved.
+**Proprietary** - All rights reserved.
 
 This software is confidential and proprietary. Unauthorized copying, distribution, or use is strictly prohibited.
 
@@ -366,11 +612,19 @@ This software is confidential and proprietary. Unauthorized copying, distributio
 
 ## Support
 
-For technical support and inquiries:
-- Review the `docs/` directory for detailed documentation
-- Check `docs/DEBUGGING-JOURNAL.md` for known issues
-- Contact the development team for enterprise support
+| Resource | Location |
+|----------|----------|
+| **Documentation** | `docs/` directory |
+| **Issue Tracking** | `docs/DEBUGGING-JOURNAL.md` |
+| **Development Roadmap** | `docs/DEVELOPMENT-ROADMAP.md` |
+| **Module Dependencies** | `docs/MODULE-DEPENDENCY-MATRIX.md` |
 
 ---
 
-**Ninja Toolkit v11** - Unified IT Management for Modern MSPs
+<p align="center">
+  <strong>Ninja Toolkit v11</strong>
+  <br>
+  <em>Unified IT Management for Modern MSPs</em>
+  <br><br>
+  Built with Electron • React • TypeScript • Tailwind CSS
+</p>
