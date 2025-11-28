@@ -166,10 +166,22 @@ try {
 }
 
 // Load Academy (requires better-sqlite3)
-let AcademyEngine: any = null;
+let QuestionBankManager: any = null;
+let GamificationEngine: any = null;
+let AcademyDatabaseManager: any = null;
 try {
-  const academyModule = require('./modules/academy/backend/engines/QuestionBank.cjs');
-  AcademyEngine = academyModule.QuestionBank || academyModule;
+  const questionBankModule = require('./modules/academy/backend/engines/QuestionBank.cjs');
+  QuestionBankManager = questionBankModule.QuestionBankManager;
+
+  // Try to load gamification engine (requires better-sqlite3)
+  try {
+    AcademyDatabaseManager = require('./modules/academy/backend/engines/DatabaseManager.cjs');
+    GamificationEngine = require('./modules/academy/backend/engines/GamificationEngine.cjs');
+    console.log('[Main] Academy gamification engine loaded');
+  } catch (gamErr: any) {
+    console.warn('[Main] Academy gamification unavailable:', gamErr.message);
+  }
+
   moduleStatus.academy.loaded = true;
   console.log('[Main] Academy engine loaded');
 } catch (error: any) {
@@ -188,7 +200,9 @@ let networkMapper: any = null;
 let securityScanner: any = null;
 let providerRouter: any = null;
 let ticketingClient: any = null;
-let academyEngine: any = null;
+let academyQuestionBank: any = null;
+let academyDatabase: any = null;
+let academyGamification: any = null;
 
 // ============================================================================
 // WINDOW CREATION
@@ -635,38 +649,158 @@ function registerIpcHandlers(): void {
   // Academy Handlers
   // -------------------------------------------------------------------------
 
-  ipcMain.handle('academy:getQuestion', async (_event, category, difficulty) => {
-    if (!moduleStatus.academy.loaded || !academyEngine) {
+  // Get a single question (original handler - updated)
+  ipcMain.handle('academy:getQuestion', async (_event, examCode, difficulty) => {
+    if (!moduleStatus.academy.loaded || !academyQuestionBank) {
       return { question: null, error: moduleStatus.academy.error || 'Academy not available' };
     }
     try {
-      const question = academyEngine.getQuestion(category, difficulty);
-      return { question };
+      const questions = academyQuestionBank.getRandomQuestions(examCode, 1);
+      return { question: questions[0] || null };
     } catch (error: any) {
       return { question: null, error: error.message };
     }
   });
 
-  ipcMain.handle('academy:submitAnswer', async (_event, questionId, answer) => {
-    if (!academyEngine) {
+  // Submit answer and record it
+  ipcMain.handle('academy:submitAnswer', async (_event, questionId, answer, examCode) => {
+    if (!academyQuestionBank) {
       return { correct: false, error: 'Academy not available' };
     }
     try {
-      const result = academyEngine.submitAnswer(questionId, answer);
-      return result;
+      const question = academyQuestionBank.getQuestionById(questionId);
+      if (!question) {
+        return { correct: false, error: 'Question not found' };
+      }
+      const correct = question.correct === answer;
+
+      // Record answer in gamification engine if available
+      if (academyGamification) {
+        academyGamification.recordAnswer(questionId, correct, examCode || question.exam);
+      }
+
+      return {
+        correct,
+        explanation: question.explanation,
+        correctAnswer: question.correct,
+        reference: question.reference
+      };
     } catch (error: any) {
       return { correct: false, error: error.message };
     }
   });
 
+  // Get progress summary
   ipcMain.handle('academy:getProgress', async () => {
-    if (!academyEngine) return { progress: 0, total: 0 };
-    return academyEngine.getProgress ? academyEngine.getProgress() : { progress: 0, total: 0 };
+    if (!academyGamification) {
+      return { progress: 0, total: 0 };
+    }
+    try {
+      return academyGamification.getProgressSummary();
+    } catch (error: any) {
+      return { progress: 0, total: 0, error: error.message };
+    }
   });
 
+  // Get certifications (exams list)
   ipcMain.handle('academy:getCertifications', async () => {
-    if (!academyEngine) return [];
-    return academyEngine.getCertifications ? academyEngine.getCertifications() : [];
+    if (!academyQuestionBank) return [];
+    try {
+      return academyQuestionBank.getExams();
+    } catch (error: any) {
+      return [];
+    }
+  });
+
+  // NEW: Get all available exams
+  ipcMain.handle('academy:getExams', async () => {
+    if (!academyQuestionBank) {
+      return { exams: [], error: 'Academy not available' };
+    }
+    try {
+      const exams = academyQuestionBank.getExams();
+      return { exams };
+    } catch (error: any) {
+      return { exams: [], error: error.message };
+    }
+  });
+
+  // NEW: Get questions for a specific exam
+  ipcMain.handle('academy:getExamQuestions', async (_event, examCode) => {
+    if (!academyQuestionBank) {
+      return { questions: [], error: 'Academy not available' };
+    }
+    try {
+      const questions = academyQuestionBank.getExamQuestions(examCode);
+      return { questions };
+    } catch (error: any) {
+      return { questions: [], error: error.message };
+    }
+  });
+
+  // NEW: Get random questions for practice
+  ipcMain.handle('academy:getRandomQuestions', async (_event, examCode, count = 10) => {
+    if (!academyQuestionBank) {
+      return { questions: [], error: 'Academy not available' };
+    }
+    try {
+      const questions = academyQuestionBank.getRandomQuestions(examCode, count);
+      return { questions };
+    } catch (error: any) {
+      return { questions: [], error: error.message };
+    }
+  });
+
+  // NEW: Get user stats from gamification
+  ipcMain.handle('academy:getUserStats', async () => {
+    if (!academyGamification) {
+      return { stats: null, error: 'Gamification not available' };
+    }
+    try {
+      const stats = academyGamification.getUserStats();
+      return { stats };
+    } catch (error: any) {
+      return { stats: null, error: error.message };
+    }
+  });
+
+  // NEW: Get detailed progress summary
+  ipcMain.handle('academy:getProgressSummary', async () => {
+    if (!academyGamification) {
+      return { summary: null, error: 'Gamification not available' };
+    }
+    try {
+      const summary = academyGamification.getProgressSummary();
+      return { summary };
+    } catch (error: any) {
+      return { summary: null, error: error.message };
+    }
+  });
+
+  // NEW: Get all badges with earned status
+  ipcMain.handle('academy:getAllBadges', async () => {
+    if (!academyGamification) {
+      return { badges: [], error: 'Gamification not available' };
+    }
+    try {
+      const badges = academyGamification.getAllBadges();
+      return { badges };
+    } catch (error: any) {
+      return { badges: [], error: error.message };
+    }
+  });
+
+  // NEW: Record answer (explicit endpoint)
+  ipcMain.handle('academy:recordAnswer', async (_event, questionId, correct, examCode) => {
+    if (!academyGamification) {
+      return { success: false, error: 'Gamification not available' };
+    }
+    try {
+      academyGamification.recordAnswer(questionId, correct, examCode);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    }
   });
 
   console.log('[Main] IPC handlers registered');
@@ -763,12 +897,23 @@ function initializeModules(): void {
     }
   }
 
-  if (AcademyEngine) {
+  // Initialize Academy subsystems
+  if (QuestionBankManager) {
     try {
-      academyEngine = typeof AcademyEngine === 'function' ? new AcademyEngine() : AcademyEngine;
-      console.log('[Main] Academy Engine initialized');
+      academyQuestionBank = new QuestionBankManager();
+      console.log('[Main] Academy QuestionBank initialized');
     } catch (error: any) {
-      console.error('[Main] Academy initialization failed:', error.message);
+      console.error('[Main] Academy QuestionBank initialization failed:', error.message);
+    }
+  }
+
+  if (AcademyDatabaseManager && GamificationEngine) {
+    try {
+      academyDatabase = new AcademyDatabaseManager();
+      academyGamification = new GamificationEngine(academyDatabase.db);
+      console.log('[Main] Academy Gamification initialized');
+    } catch (error: any) {
+      console.error('[Main] Academy Gamification initialization failed:', error.message);
     }
   }
 

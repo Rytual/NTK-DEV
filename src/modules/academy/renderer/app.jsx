@@ -23,15 +23,15 @@ function NinjaAcademy() {
       console.log('[App] Initializing Ninja Academy...');
 
       // Load user stats
-      const stats = await window.electronAPI.getUserStats();
-      setUserStats(stats);
+      const statsResult = await window.electronAPI.invoke('academy:getUserStats');
+      setUserStats(statsResult?.stats || null);
 
       // Load available exams
-      const examList = await window.electronAPI.getExams();
-      setExams(examList);
+      const examsResult = await window.electronAPI.invoke('academy:getExams');
+      setExams(examsResult?.exams || []);
 
-      console.log('[App] Loaded stats:', stats);
-      console.log('[App] Loaded exams:', examList.length);
+      console.log('[App] Loaded stats:', statsResult);
+      console.log('[App] Loaded exams:', examsResult?.exams?.length || 0);
 
       setLoading(false);
     } catch (error) {
@@ -221,19 +221,25 @@ function PracticeMode({ selectedExam, onStatsUpdate }) {
   }, [selectedExam]);
 
   async function loadQuestions() {
-    if (!selectedExam) {
-      // Load random questions from any exam
-      const allExams = await window.electronAPI.getExams();
-      const randomExam = allExams[Math.floor(Math.random() * allExams.length)];
-      const qs = await window.electronAPI.getRandomQuestions(randomExam.code, 10);
-      setQuestions(qs);
-    } else {
-      const qs = await window.electronAPI.getRandomQuestions(selectedExam.code, 10);
-      setQuestions(qs);
+    try {
+      if (!selectedExam) {
+        // Load random questions from any exam
+        const examsResult = await window.electronAPI.invoke('academy:getExams');
+        const allExams = examsResult?.exams || [];
+        if (allExams.length === 0) return;
+        const randomExam = allExams[Math.floor(Math.random() * allExams.length)];
+        const qsResult = await window.electronAPI.invoke('academy:getRandomQuestions', randomExam.code, 10);
+        setQuestions(qsResult?.questions || []);
+      } else {
+        const qsResult = await window.electronAPI.invoke('academy:getRandomQuestions', selectedExam.code, 10);
+        setQuestions(qsResult?.questions || []);
+      }
+      setCurrentIndex(0);
+      setSelectedAnswer(null);
+      setShowExplanation(false);
+    } catch (error) {
+      console.error('[App] Failed to load questions:', error);
     }
-    setCurrentIndex(0);
-    setSelectedAnswer(null);
-    setShowExplanation(false);
   }
 
   async function handleAnswer(answerIndex) {
@@ -245,12 +251,18 @@ function PracticeMode({ selectedExam, onStatsUpdate }) {
     setSelectedAnswer(answerIndex);
     setShowExplanation(true);
 
-    // Record answer
-    await window.electronAPI.recordAnswer(question.id, correct, question.exam);
+    try {
+      // Record answer
+      await window.electronAPI.invoke('academy:recordAnswer', question.id, correct, question.exam);
 
-    // Update stats
-    const newStats = await window.electronAPI.getUserStats();
-    onStatsUpdate(newStats);
+      // Update stats
+      const statsResult = await window.electronAPI.invoke('academy:getUserStats');
+      if (statsResult?.stats) {
+        onStatsUpdate(statsResult.stats);
+      }
+    } catch (error) {
+      console.error('[App] Failed to record answer:', error);
+    }
   }
 
   function handleNext() {
@@ -346,8 +358,12 @@ function ProgressView({ userStats }) {
   }, []);
 
   async function loadProgressSummary() {
-    const sum = await window.electronAPI.getProgressSummary();
-    setSummary(sum);
+    try {
+      const result = await window.electronAPI.invoke('academy:getProgressSummary');
+      setSummary(result?.summary || null);
+    } catch (error) {
+      console.error('[App] Failed to load progress summary:', error);
+    }
   }
 
   if (!summary) {
@@ -415,8 +431,12 @@ function BadgesView() {
   }, []);
 
   async function loadBadges() {
-    const allBadges = await window.electronAPI.getAllBadges();
-    setBadges(allBadges);
+    try {
+      const result = await window.electronAPI.invoke('academy:getAllBadges');
+      setBadges(result?.badges || []);
+    } catch (error) {
+      console.error('[App] Failed to load badges:', error);
+    }
   }
 
   const earnedBadges = badges.filter(b => b.earned);
