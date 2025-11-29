@@ -1,13 +1,16 @@
 import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  Search,
   Sun,
   Moon,
   Monitor,
   Bell,
   MessageSquare,
   Command,
+  AlertCircle,
+  CheckCircle,
+  Info,
+  BellOff,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { MODULES } from '../../lib/constants';
@@ -20,7 +23,15 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '../ui/Tooltip';
+import { Dropdown, DropdownHeader, DropdownItem, DropdownEmpty } from '../ui/Dropdown';
 import { useTheme } from '../../contexts/ThemeContext';
+
+// Mock notifications for demo
+const mockNotifications = [
+  { id: '1', type: 'alert', title: 'Security Scan Complete', message: '3 vulnerabilities found', time: '5 min ago' },
+  { id: '2', type: 'success', title: 'Backup Completed', message: 'All systems backed up successfully', time: '1 hour ago' },
+  { id: '3', type: 'info', title: 'System Update Available', message: 'Version 11.0.1 is ready to install', time: '2 hours ago' },
+];
 
 interface TopBarProps {
   onChatToggle: () => void;
@@ -32,6 +43,8 @@ export function TopBar({ onChatToggle, chatOpen }: TopBarProps) {
   const { theme, setTheme } = useTheme();
   const [searchValue, setSearchValue] = React.useState('');
   const [searchFocused, setSearchFocused] = React.useState(false);
+  const [notificationsOpen, setNotificationsOpen] = React.useState(false);
+  const [notifications, setNotifications] = React.useState(mockNotifications);
 
   // Get current module info
   const currentModule = MODULES.find((m) => m.path === location.pathname);
@@ -108,16 +121,69 @@ export function TopBar({ onChatToggle, chatOpen }: TopBarProps) {
           </TooltipContent>
         </Tooltip>
 
-        {/* Notifications */}
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Notifications</TooltipContent>
-        </Tooltip>
+        {/* Notifications Dropdown */}
+        <Dropdown
+          open={notificationsOpen}
+          onClose={() => setNotificationsOpen(false)}
+          trigger={
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative"
+                  onClick={() => setNotificationsOpen(!notificationsOpen)}
+                >
+                  <Bell className="h-5 w-5" />
+                  {notifications.length > 0 && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Notifications</TooltipContent>
+            </Tooltip>
+          }
+        >
+          <DropdownHeader>
+            <div className="flex items-center justify-between">
+              <span>Notifications</span>
+              {notifications.length > 0 && (
+                <button
+                  onClick={() => setNotifications([])}
+                  className="text-xs text-foreground-muted hover:text-foreground"
+                >
+                  Clear all
+                </button>
+              )}
+            </div>
+          </DropdownHeader>
+          {notifications.length === 0 ? (
+            <DropdownEmpty>
+              <BellOff className="h-8 w-8 mx-auto mb-2 text-foreground-muted/50" />
+              <p>No notifications</p>
+            </DropdownEmpty>
+          ) : (
+            <div className="max-h-80 overflow-y-auto">
+              {notifications.map((notification) => (
+                <DropdownItem
+                  key={notification.id}
+                  onClick={() => setNotifications((prev) => prev.filter((n) => n.id !== notification.id))}
+                >
+                  <div className="flex-shrink-0 mt-0.5">
+                    {notification.type === 'alert' && <AlertCircle className="h-4 w-4 text-destructive" />}
+                    {notification.type === 'success' && <CheckCircle className="h-4 w-4 text-success" />}
+                    {notification.type === 'info' && <Info className="h-4 w-4 text-primary" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-foreground truncate">{notification.title}</p>
+                    <p className="text-foreground-muted truncate">{notification.message}</p>
+                    <p className="text-2xs text-foreground-muted/70 mt-1">{notification.time}</p>
+                  </div>
+                </DropdownItem>
+              ))}
+            </div>
+          )}
+        </Dropdown>
 
         {/* AI Chat Toggle */}
         <Tooltip>

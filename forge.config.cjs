@@ -9,10 +9,11 @@
  * - Native module rebuild support
  */
 
-const { FusesPlugin } = require('@electron-forge/plugin-fuses');
-const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 const path = require('path');
 const fs = require('fs');
+
+// Note: FusesPlugin removed as it conflicts with 'start' command in Electron Forge
+// Fuses can be applied post-build using @electron/fuses directly if needed
 
 // Check if icon exists and has content
 const iconPath = path.join(__dirname, 'assets', 'icons', 'icon.ico');
@@ -51,6 +52,7 @@ module.exports = {
     // Extra resources to include
     extraResource: [
       './art',
+      './assets/splash.html',
     ],
   },
   rebuildConfig: {
@@ -99,16 +101,8 @@ module.exports = {
         ],
       },
     },
-    // Fuses plugin for security hardening
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-      [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
+    // Note: FusesPlugin removed - conflicts with 'electron-forge start'
+    // For production builds, apply fuses post-package with @electron/fuses CLI
   ],
   // Hooks for build process
   hooks: {

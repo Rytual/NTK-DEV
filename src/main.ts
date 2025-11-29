@@ -6,7 +6,7 @@
  * Native modules are loaded with graceful fallbacks for development flexibility.
  */
 
-import { app, BrowserWindow, ipcMain, Menu, globalShortcut, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, globalShortcut, dialog, Tray, nativeImage } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -28,6 +28,8 @@ try {
 
 // Global window references
 let mainWindow: BrowserWindow | null = null;
+let splashWindow: BrowserWindow | null = null;
+let tray: Tray | null = null;
 
 // Module status tracking
 const moduleStatus: Record<string, { loaded: boolean; error?: string }> = {
@@ -222,8 +224,151 @@ let academyDatabase: any = null;
 let academyGamification: any = null;
 
 // ============================================================================
+// SYSTEM TRAY
+// ============================================================================
+
+function createTray(): void {
+  // Try to load icon from various locations
+  const iconPaths = app.isPackaged
+    ? [
+        path.join(process.resourcesPath, 'assets', 'icons', 'icon.png'),
+        path.join(process.resourcesPath, 'icon.png'),
+      ]
+    : [
+        path.join(__dirname, '..', 'assets', 'icons', 'icon.png'),
+        path.join(__dirname, '..', 'assets', 'icons', 'icon.ico'),
+      ];
+
+  let trayIcon: Electron.NativeImage | null = null;
+
+  for (const iconPath of iconPaths) {
+    if (fs.existsSync(iconPath)) {
+      const stat = fs.statSync(iconPath);
+      if (stat.size > 0) {
+        trayIcon = nativeImage.createFromPath(iconPath);
+        break;
+      }
+    }
+  }
+
+  // Fallback: Create a simple programmatic icon if no file found
+  if (!trayIcon || trayIcon.isEmpty()) {
+    // Create a 16x16 colored square as fallback
+    const size = 16;
+    const canvas = Buffer.alloc(size * size * 4);
+    for (let i = 0; i < size * size; i++) {
+      canvas[i * 4] = 99;     // R - primary color
+      canvas[i * 4 + 1] = 102; // G
+      canvas[i * 4 + 2] = 241; // B
+      canvas[i * 4 + 3] = 255; // A
+    }
+    trayIcon = nativeImage.createFromBuffer(canvas, { width: size, height: size });
+  }
+
+  // Resize for tray (Windows typically uses 16x16)
+  if (process.platform === 'win32') {
+    trayIcon = trayIcon.resize({ width: 16, height: 16 });
+  }
+
+  tray = new Tray(trayIcon);
+  tray.setToolTip('Ninja Toolkit v11');
+
+  const contextMenu = Menu.buildFromTemplate([
+    {
+      label: 'Show Ninja Toolkit',
+      click: () => {
+        if (mainWindow) {
+          if (mainWindow.isMinimized()) mainWindow.restore();
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Dashboard',
+      click: () => {
+        mainWindow?.webContents.send('hotkey:module', 'dashboard');
+        mainWindow?.show();
+      },
+    },
+    {
+      label: 'NinjaShark',
+      click: () => {
+        mainWindow?.webContents.send('hotkey:module', 'ninjashark');
+        mainWindow?.show();
+      },
+    },
+    {
+      label: 'Academy',
+      click: () => {
+        mainWindow?.webContents.send('hotkey:module', 'academy');
+        mainWindow?.show();
+      },
+    },
+    { type: 'separator' },
+    {
+      label: 'Quit',
+      click: () => {
+        app.quit();
+      },
+    },
+  ]);
+
+  tray.setContextMenu(contextMenu);
+
+  // Double-click to show window (Windows)
+  tray.on('double-click', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) mainWindow.restore();
+      mainWindow.show();
+      mainWindow.focus();
+    }
+  });
+
+  console.log('[Main] System tray created');
+}
+
+// ============================================================================
 // WINDOW CREATION
 // ============================================================================
+
+function createSplashWindow(): void {
+  // Determine splash path - works in both dev and production
+  // In dev: __dirname is .vite/build, so we need to go up 2 levels
+  // In prod: it's in resources
+  const splashPath = app.isPackaged
+    ? path.join(process.resourcesPath, 'splash.html')
+    : path.join(__dirname, '..', '..', 'assets', 'splash.html');
+
+  splashWindow = new BrowserWindow({
+    width: 400,
+    height: 500,
+    frame: false,
+    transparent: true,
+    alwaysOnTop: true,
+    resizable: false,
+    skipTaskbar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+    },
+    backgroundColor: '#00000000',
+  });
+
+  // Try to load splash, fallback to showing main window directly if it fails
+  splashWindow.loadFile(splashPath).catch((err) => {
+    console.warn('[Main] Splash screen not found, skipping:', err.message);
+    splashWindow?.close();
+    splashWindow = null;
+  });
+
+  splashWindow.on('closed', () => {
+    splashWindow = null;
+  });
+
+  console.log('[Main] Splash window created');
+}
 
 function createWindow(): void {
   // Determine preload path based on environment
@@ -258,10 +403,17 @@ function createWindow(): void {
     mainWindow.loadFile(path.join(__dirname, '../renderer/main_window/index.html'));
   }
 
-  // Show when ready
+  // Show when ready, close splash
   mainWindow.once('ready-to-show', () => {
-    mainWindow?.show();
-    console.log('[Main] Window ready and shown');
+    // Give a small delay for polish - splash animation completes
+    setTimeout(() => {
+      if (splashWindow && !splashWindow.isDestroyed()) {
+        splashWindow.close();
+      }
+      mainWindow?.show();
+      mainWindow?.focus();
+      console.log('[Main] Window ready and shown');
+    }, 500);
   });
 
   mainWindow.on('closed', () => {
@@ -1055,14 +1207,20 @@ function registerHotkeys(): void {
 app.whenReady().then(() => {
   console.log('[Main] Ninja Toolkit v11 starting...');
 
-  // Initialize modules first
+  // Show splash screen first
+  createSplashWindow();
+
+  // Initialize modules
   initializeModules();
 
   // Register IPC handlers
   registerIpcHandlers();
 
-  // Create window
+  // Create main window (splash will close when ready)
   createWindow();
+
+  // Create system tray
+  createTray();
 
   // Register hotkeys
   registerHotkeys();
@@ -1079,6 +1237,12 @@ app.whenReady().then(() => {
 app.on('will-quit', () => {
   // Unregister hotkeys
   globalShortcut.unregisterAll();
+
+  // Destroy tray
+  if (tray) {
+    tray.destroy();
+    tray = null;
+  }
 
   // Cleanup MediaLoader
   if (mediaLoaderBridge?.cleanupMediaLoaderBridge) {

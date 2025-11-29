@@ -7,3 +7,5 @@ export { Avatar, AvatarImage, AvatarFallback } from './Avatar';
 export { Skeleton, SkeletonCard, SkeletonTable, SkeletonList } from './Skeleton';
 export { EmptyState } from './EmptyState';
 export { ScrollArea, ScrollBar } from './ScrollArea';
+export { Dialog, DialogHeader, DialogContent, DialogFooter } from './Dialog';
+export { Dropdown, DropdownHeader, DropdownItem, DropdownEmpty, DropdownFooter } from './Dropdown';

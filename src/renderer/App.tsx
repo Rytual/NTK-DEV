@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { TooltipProvider } from '../components/ui/Tooltip';
 import { ThemeProvider } from '../contexts/ThemeContext';
@@ -250,9 +250,9 @@ export default function App() {
     <ErrorBoundary moduleName="Application Root">
       <ThemeProvider defaultTheme="dark">
         <TooltipProvider delayDuration={300}>
-          <BrowserRouter>
+          <HashRouter>
             <AppLayout />
-          </BrowserRouter>
+          </HashRouter>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
