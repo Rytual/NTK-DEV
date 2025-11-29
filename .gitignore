@@ -152,6 +152,7 @@ release/
 Screenshot*.png
 *.png
 !assets/**/*.png
+!gitart/**/*.png
 
 # Don't track .claude settings
 .claude/

@@ -28,6 +28,50 @@
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="Gitart/dash.png" alt="Dashboard" width="100%">
+  <br><em>Dashboard - Unified command center with real-time metrics and glass-morphism UI</em>
+</p>
+
+<details>
+<summary><strong>View All Module Screenshots</strong></summary>
+
+### NinjaShark - Packet Capture
+<img src="Gitart/ninjashark.png" alt="NinjaShark Packet Capture" width="100%">
+
+### PowerShell Terminal
+<img src="Gitart/powershell.png" alt="PowerShell Terminal" width="100%">
+
+### Remote Access (PuTTY)
+<img src="Gitart/putty.png" alt="PuTTY Remote Access" width="100%">
+
+### Network Map (Auvik)
+<img src="Gitart/auvik.png" alt="Auvik Network Map" width="100%">
+
+### Security Scanner
+<img src="Gitart/security.png" alt="Security Scanner" width="100%">
+
+### Microsoft 365 Admin
+<img src="Gitart/o365-admin.png" alt="M365 Admin" width="100%">
+
+### ConnectWise Ticketing
+<img src="Gitart/connectwise.png" alt="ConnectWise Ticketing" width="100%">
+
+### Academy Training
+<img src="Gitart/academy.png" alt="Academy Training" width="100%">
+
+### KageForge AI Manager
+<img src="Gitart/kage-ai.png" alt="KageForge AI" width="100%">
+
+### AI Integration Panel
+<img src="Gitart/ai-integration.png" alt="AI Integration" width="100%">
+
+</details>
+
+---
+
 ## Executive Summary
 
 **Ninja Toolkit v11** is a production-ready, enterprise-grade desktop application engineered specifically for Managed Service Providers (MSPs). It consolidates 11 specialized IT management modules into a unified command center, eliminating the need to switch between disparate tools and dramatically improving operational efficiency.
