@@ -58,7 +58,7 @@ export function StatusBar({ className }: StatusBarProps) {
   return (
     <footer
       className={cn(
-        'flex items-center justify-between h-7 px-3 bg-background-secondary border-t border-border text-xs',
+        'flex items-center justify-between h-7 px-3 bg-background-secondary/60 backdrop-blur-xl border-t border-white/10 text-xs',
         className
       )}
     >

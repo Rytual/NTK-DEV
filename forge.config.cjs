@@ -7,6 +7,7 @@
  * - ZIP archive for portable distribution
  * - ASAR packaging for security
  * - Native module rebuild support
+ * - Art directory bundling for backgrounds
  */
 
 const path = require('path');
@@ -19,6 +20,9 @@ const fs = require('fs');
 const iconPath = path.join(__dirname, 'assets', 'icons', 'icon.ico');
 const hasValidIcon = fs.existsSync(iconPath) && fs.statSync(iconPath).size > 0;
 
+console.log('[Forge Config] Icon path:', iconPath);
+console.log('[Forge Config] Icon valid:', hasValidIcon);
+
 module.exports = {
   packagerConfig: {
     asar: true,
@@ -26,8 +30,8 @@ module.exports = {
     executableName: 'ninja-toolkit',
     appBundleId: 'com.ninja.toolkit.v11',
     appCategoryType: 'public.app-category.developer-tools',
-    // Only include icon if it exists and is valid
-    ...(hasValidIcon && { icon: './assets/icons/icon' }),
+    // Always include icon now that it's generated
+    icon: './assets/icons/icon',
     win32metadata: {
       CompanyName: 'Ninja Toolkit Team',
       FileDescription: 'Ninja Toolkit v11 - Complete MSP Management Platform',
@@ -43,16 +47,13 @@ module.exports = {
       /^\/\.vs/,
       /^\/node_modules\/\.cache/,
       /^\/docs\//,
-      /^\/scripts\//,
       /\.md$/,
       /\.log$/,
-      /^\/art\/videos/,  // Large video files - users add their own
-      /^\/art\/images/,  // Large image files - users add their own
     ],
-    // Extra resources to include
+    // Extra resources to include - art directory with all media
     extraResource: [
       './art',
-      './assets/splash.html',
+      './assets',
     ],
   },
   rebuildConfig: {
@@ -67,8 +68,8 @@ module.exports = {
         authors: 'Ninja Toolkit Team',
         description: 'Complete MSP Management Platform with 11 Integrated Modules',
         noMsi: true,
-        // Only include icon if valid
-        ...(hasValidIcon && { setupIcon: './assets/icons/icon.ico' }),
+        setupIcon: './assets/icons/icon.ico',
+        iconUrl: 'file://assets/icons/icon.ico',
       },
     },
     {
@@ -108,13 +109,54 @@ module.exports = {
   hooks: {
     generateAssets: async () => {
       console.log('[Forge] Generating assets...');
+
+      // Verify icon exists
+      if (!hasValidIcon) {
+        console.log('[Forge] Generating icons...');
+        try {
+          require('./scripts/generate-icons.cjs');
+        } catch (e) {
+          console.warn('[Forge] Could not generate icons:', e.message);
+        }
+      }
     },
     prePackage: async () => {
       console.log('[Forge] Pre-package: Validating build configuration...');
+
+      // Verify art directory exists
+      const artDir = path.join(__dirname, 'art');
+      if (!fs.existsSync(artDir)) {
+        fs.mkdirSync(artDir, { recursive: true });
+        fs.mkdirSync(path.join(artDir, 'images'), { recursive: true });
+        fs.mkdirSync(path.join(artDir, 'videos'), { recursive: true });
+        console.log('[Forge] Created art directory structure');
+      }
+
+      // Count media files
+      const imagesDir = path.join(artDir, 'images');
+      const videosDir = path.join(artDir, 'videos');
+      const imageCount = fs.existsSync(imagesDir)
+        ? fs.readdirSync(imagesDir).filter(f => /\.(jpg|jpeg|png|gif|webp)$/i.test(f)).length
+        : 0;
+      const videoCount = fs.existsSync(videosDir)
+        ? fs.readdirSync(videosDir).filter(f => /\.(mp4|webm|mov)$/i.test(f)).length
+        : 0;
+
+      console.log(`[Forge] Bundling ${imageCount} images and ${videoCount} videos`);
     },
     postPackage: async (config, result) => {
       console.log('[Forge] Post-package: Build complete');
       console.log(`[Forge] Output: ${result.outputPaths.join(', ')}`);
+
+      // Verify art was copied
+      for (const outputPath of result.outputPaths) {
+        const resourcesPath = path.join(outputPath, 'resources', 'art');
+        if (fs.existsSync(resourcesPath)) {
+          console.log(`[Forge] Art directory verified at: ${resourcesPath}`);
+        } else {
+          console.warn(`[Forge] Warning: Art directory not found at: ${resourcesPath}`);
+        }
+      }
     },
   },
 };

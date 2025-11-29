@@ -59,7 +59,7 @@ export function TopBar({ onChatToggle, chatOpen }: TopBarProps) {
   const ThemeIcon = theme === 'dark' ? Moon : theme === 'light' ? Sun : Monitor;
 
   return (
-    <header className="flex items-center justify-between h-14 px-4 bg-background border-b border-border">
+    <header className="flex items-center justify-between h-14 px-4 bg-background/60 backdrop-blur-xl border-b border-white/10">
       {/* Left Section - Breadcrumb */}
       <div className="flex items-center gap-3">
         {currentModule && (

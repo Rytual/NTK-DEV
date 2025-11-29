@@ -6,6 +6,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { Sidebar, TopBar, StatusBar, ChatPanel } from '../components/layout';
 import ErrorBoundary from '../components/ErrorBoundary';
 import { prefetchModule, PerformanceMetrics } from '../lib/utils';
+import { useMediaLoader } from '../hooks/useMediaLoader';
 
 // Performance metrics instance
 const perfMetrics = PerformanceMetrics.getInstance();
@@ -193,6 +194,16 @@ function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = React.useState(false);
   const [chatOpen, setChatOpen] = React.useState(false);
 
+  // Media loader for background images and videos
+  const {
+    backgroundImage,
+    headerVideo,
+    chatBackground,
+    getBackgroundStyle,
+    getVideoUrl,
+    refreshChatBackground,
+  } = useMediaLoader();
+
   // Keyboard shortcuts
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -212,17 +223,44 @@ function AppLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  // Refresh chat background when chat opens
+  React.useEffect(() => {
+    if (chatOpen) {
+      refreshChatBackground();
+    }
+  }, [chatOpen, refreshChatBackground]);
+
+  // Background style for main content area
+  const bgStyle = getBackgroundStyle(backgroundImage);
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('[App] backgroundImage:', backgroundImage);
+    console.log('[App] headerVideo:', headerVideo);
+    console.log('[App] bgStyle:', bgStyle);
+    console.log('[App] videoUrl:', getVideoUrl(headerVideo));
+  }, [backgroundImage, headerVideo, bgStyle, getVideoUrl]);
+
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-background">
-      {/* Sidebar */}
+    <div className="relative flex h-screen w-screen overflow-hidden">
+      {/* Global Background Image Layer */}
+      <div
+        className="absolute inset-0 z-0 transition-all duration-1000"
+        style={bgStyle}
+      />
+      {/* Dark overlay for readability - reduced for better art visibility */}
+      <div className="absolute inset-0 z-0 bg-black/25" />
+
+      {/* Sidebar - translucent */}
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggle={() => setSidebarCollapsed((prev) => !prev)}
+        videoUrl={getVideoUrl(headerVideo)}
       />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Top Bar */}
+      <div className="relative z-10 flex-1 flex flex-col min-w-0">
+        {/* Top Bar - translucent */}
         <TopBar
           onChatToggle={() => setChatOpen((prev) => !prev)}
           chatOpen={chatOpen}
@@ -233,11 +271,15 @@ function AppLayout() {
           {/* Page Content */}
           <AnimatedRoutes />
 
-          {/* Chat Panel */}
-          <ChatPanel open={chatOpen} onClose={() => setChatOpen(false)} />
+          {/* Chat Panel with its own background */}
+          <ChatPanel
+            open={chatOpen}
+            onClose={() => setChatOpen(false)}
+            backgroundStyle={getBackgroundStyle(chatBackground)}
+          />
         </div>
 
-        {/* Status Bar */}
+        {/* Status Bar - translucent */}
         <StatusBar />
       </div>
     </div>

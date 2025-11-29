@@ -146,5 +146,12 @@ ENV/
 
 # Windows installer outputs
 *.msi
-*.exe
-!assets/icons/*.exe
+release/
+
+# Screenshots (development only)
+Screenshot*.png
+*.png
+!assets/**/*.png
+
+# Don't track .claude settings
+.claude/

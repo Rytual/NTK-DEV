@@ -26,6 +26,7 @@ interface Message {
 interface ChatPanelProps {
   open: boolean;
   onClose: () => void;
+  backgroundStyle?: React.CSSProperties;
 }
 
 const panelVariants = {
@@ -33,7 +34,7 @@ const panelVariants = {
   closed: { x: 400, opacity: 0 },
 };
 
-export function ChatPanel({ open, onClose }: ChatPanelProps) {
+export function ChatPanel({ open, onClose, backgroundStyle }: ChatPanelProps) {
   const [messages, setMessages] = React.useState<Message[]>([
     {
       id: '1',
@@ -115,10 +116,18 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           exit="closed"
           variants={panelVariants}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          className="w-96 h-full bg-background border-l border-border flex flex-col"
+          className="w-96 h-full border-l border-white/10 flex flex-col relative overflow-hidden"
         >
+          {/* Background Image Layer */}
+          <div
+            className="absolute inset-0 z-0 transition-all duration-1000"
+            style={backgroundStyle}
+          />
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 z-0 bg-black/60 backdrop-blur-xl" />
+
           {/* Header */}
-          <div className="flex items-center justify-between h-14 px-4 border-b border-border">
+          <div className="relative z-10 flex items-center justify-between h-14 px-4 border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
                 <Sparkles className="w-4 h-4 text-white" />
@@ -139,7 +148,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </div>
 
           {/* Messages */}
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+          <ScrollArea className="relative z-10 flex-1 p-4" ref={scrollRef}>
             <div className="space-y-4">
               {messages.map((message) => (
                 <MessageBubble key={message.id} message={message} />
@@ -164,7 +173,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </ScrollArea>
 
           {/* Quick Actions */}
-          <div className="px-4 py-2 border-t border-border">
+          <div className="relative z-10 px-4 py-2 border-t border-white/10">
             <div className="flex gap-2 overflow-x-auto scrollbar-hide">
               {['Network scan', 'Security check', 'Help with PowerShell'].map((action) => (
                 <button
@@ -179,7 +188,7 @@ export function ChatPanel({ open, onClose }: ChatPanelProps) {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-border">
+          <div className="relative z-10 p-4 border-t border-white/10">
             <div className="relative">
               <textarea
                 ref={inputRef}

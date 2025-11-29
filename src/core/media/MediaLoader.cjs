@@ -21,10 +21,27 @@ class MediaLoader extends EventEmitter {
   constructor(options = {}) {
     super();
 
-    // Configure paths - point to project root /art directory
-    const projectRoot = process.cwd();
-    this.videosPath = options.videosPath || path.join(projectRoot, 'art', 'videos');
-    this.imagesPath = options.imagesPath || path.join(projectRoot, 'art', 'images');
+    // Configure paths - detect if running in packaged app or development
+    // In packaged app: art is in process.resourcesPath/art
+    // In development: art is in process.cwd()/art
+    let artBasePath;
+    try {
+      const { app } = require('electron');
+      if (app && app.isPackaged) {
+        artBasePath = path.join(process.resourcesPath, 'art');
+        console.log('[MediaLoader] Running in packaged mode, using resources path');
+      } else {
+        artBasePath = path.join(process.cwd(), 'art');
+        console.log('[MediaLoader] Running in development mode, using cwd');
+      }
+    } catch (e) {
+      // Fallback for non-Electron environments
+      artBasePath = path.join(process.cwd(), 'art');
+      console.log('[MediaLoader] Electron not available, using cwd');
+    }
+
+    this.videosPath = options.videosPath || path.join(artBasePath, 'videos');
+    this.imagesPath = options.imagesPath || path.join(artBasePath, 'images');
 
     // Storage for discovered media
     this.videos = [];

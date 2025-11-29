@@ -24,6 +24,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 interface SidebarProps {
   collapsed: boolean;
   onToggle: () => void;
+  videoUrl?: string | null;
 }
 
 const sidebarVariants = {
@@ -36,11 +37,12 @@ const logoVariants = {
   collapsed: { opacity: 0, x: -20 },
 };
 
-export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+export function Sidebar({ collapsed, onToggle, videoUrl }: SidebarProps) {
   const location = useLocation();
   const { theme, setTheme } = useTheme();
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [helpOpen, setHelpOpen] = React.useState(false);
+  const videoRef = React.useRef<HTMLVideoElement>(null);
 
   // Group modules by category
   const groupedModules = React.useMemo(() => {
@@ -54,19 +56,43 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     return groups;
   }, []);
 
+  // Auto-play video when URL changes
+  React.useEffect(() => {
+    if (videoRef.current && videoUrl) {
+      videoRef.current.play().catch(() => {
+        // Autoplay may be blocked, that's okay
+      });
+    }
+  }, [videoUrl]);
+
   return (
     <motion.aside
       initial={false}
       animate={collapsed ? 'collapsed' : 'expanded'}
       variants={sidebarVariants}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
-      className="flex flex-col h-full bg-background-secondary border-r border-border relative z-30"
+      className="flex flex-col h-full bg-background-secondary/80 backdrop-blur-xl border-r border-white/10 relative z-30"
     >
-      {/* Logo Section */}
-      <div className="flex items-center h-16 px-4 border-b border-border">
+      {/* Logo Section with Video */}
+      <div className="flex items-center h-16 px-4 border-b border-white/10 overflow-hidden">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center shadow-glow">
-            <span className="text-xl font-bold text-white">N</span>
+          {/* Video Container or Logo Fallback */}
+          <div className="flex-shrink-0 w-10 h-10 rounded-xl overflow-hidden relative shadow-glow">
+            {videoUrl ? (
+              <video
+                ref={videoRef}
+                src={videoUrl}
+                className="absolute inset-0 w-full h-full object-cover"
+                autoPlay
+                loop
+                muted
+                playsInline
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <span className="text-xl font-bold text-white">N</span>
+              </div>
+            )}
           </div>
           <AnimatePresence>
             {!collapsed && (
@@ -122,7 +148,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </ScrollArea>
 
       {/* Footer */}
-      <div className="p-3 border-t border-border space-y-1">
+      <div className="p-3 border-t border-white/10 space-y-1">
         <NavItemButton
           icon={Settings}
           label="Settings"

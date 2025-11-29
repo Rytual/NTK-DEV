@@ -138,10 +138,15 @@ const KageChat: React.FC<KageChatProps> = ({ collapsed, onToggle, context }) => 
 
     try {
       // Call Kage via IPC (using canonical channel name)
-      const response: KageResponse = await window.electronAPI.invoke('kage:sendMessage', query, {
+      const response = await window.electronAPI.invoke('kage:sendMessage', query, {
         ...context,
         sessionId: getSessionId()
-      });
+      }) as KageResponse | null;
+
+      // Handle case where response is null or missing required fields
+      if (!response || !response.response) {
+        throw new Error('Invalid response from Kage');
+      }
 
       // Add assistant message
       const assistantMessage: Message = {

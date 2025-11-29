@@ -79,9 +79,9 @@
 
 /* === Dark Theme === */
 .dark {
-  --color-background: oklch(10% 0.03 260);
-  --color-background-secondary: oklch(12% 0.03 260);
-  --color-background-tertiary: oklch(15% 0.03 260);
+  --color-background: oklch(10% 0.03 260 / 0.7);
+  --color-background-secondary: oklch(12% 0.03 260 / 0.6);
+  --color-background-tertiary: oklch(15% 0.03 260 / 0.5);
   --color-foreground: oklch(98% 0.01 250);
   --color-foreground-muted: oklch(60% 0.02 260);
 
@@ -93,12 +93,13 @@
   --color-accent-foreground: oklch(100% 0 0);
   --color-accent-hover: oklch(65% 0.2 260);
 
-  --color-surface: oklch(15% 0.03 260);
-  --color-surface-hover: oklch(18% 0.03 260);
-  --color-surface-active: oklch(21% 0.03 260);
+  /* Translucent surfaces for glass-morphism effect */
+  --color-surface: oklch(15% 0.03 260 / 0.65);
+  --color-surface-hover: oklch(18% 0.03 260 / 0.7);
+  --color-surface-active: oklch(21% 0.03 260 / 0.75);
 
-  --color-border: oklch(22% 0.03 260);
-  --color-border-hover: oklch(30% 0.03 260);
+  --color-border: oklch(22% 0.03 260 / 0.5);
+  --color-border-hover: oklch(30% 0.03 260 / 0.6);
 
   --color-destructive: oklch(55% 0.2 25);
   --color-destructive-foreground: oklch(100% 0 0);

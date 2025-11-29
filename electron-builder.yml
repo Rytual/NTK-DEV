@@ -8,9 +8,10 @@ directories:
 
 files:
   - "dist/**/*"
-  - "src/backend/**/*.js"
-  - "src/core/**/*.js"
-  - "src/preload.js"
+  - ".vite/**/*"
+  - "src/backend/**/*.cjs"
+  - "src/core/**/*.cjs"
+  - "src/modules/**/*.cjs"
   - "package.json"
   - "!node_modules/.cache/**"
   - "!**/*.ts"
@@ -20,27 +21,63 @@ files:
   - "!.git/**"
   - "!.claude/**"
   - "!.vscode/**"
+  - "!.vs/**"
 
+# Include art directory with all images and videos
 extraResources:
   - from: "art"
     to: "art"
     filter:
-      - "**/*"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.png"
+      - "**/*.gif"
+      - "**/*.webp"
+      - "**/*.mp4"
+      - "**/*.webm"
+      - "**/*.mov"
   - from: "assets"
     to: "assets"
     filter:
       - "**/*"
 
+# Windows NSIS installer with location selection
 win:
   target:
+    - target: nsis
+      arch:
+        - x64
     - target: portable
       arch:
         - x64
   icon: assets/icons/icon.ico
-  artifactName: "${productName}-${version}-portable.${ext}"
+  artifactName: "${productName}-${version}-${arch}-Setup.${ext}"
 
+# NSIS installer configuration - allows custom install location
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  allowElevation: true
+  installerIcon: assets/icons/icon.ico
+  uninstallerIcon: assets/icons/icon.ico
+  installerHeaderIcon: assets/icons/icon.ico
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: "Ninja Toolkit"
+  include: "scripts/installer.nsh"
+  menuCategory: "Ninja Toolkit"
+  perMachine: false
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+
+# Portable configuration
 portable:
   artifactName: "${productName}-${version}-portable.${ext}"
 
 asar: true
-compression: store
+compression: normal
+
+# Publish configuration (for auto-updates later)
+publish:
+  provider: generic
+  url: "https://updates.ninjatoolkit.local"

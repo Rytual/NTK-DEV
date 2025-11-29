@@ -131,15 +131,15 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
       }
 
       // Get random image from global MediaLoader (using canonical API)
-      const background = await window.electronAPI.invoke('media:getRandomImage');
+      const background = await window.electronAPI.invoke('media:getRandomImage') as MediaAsset | null;
 
-      if (background.type === 'gradient') {
+      if (background?.type === 'gradient') {
         // Using procedural gradient (no images available)
         console.log('[Splash] Using procedural gradient:', background.name);
         setSelectedAsset(background);
-        setProceduralGradient(background.value);
+        setProceduralGradient(background.value || generateProceduralGradient());
         setUseProceduralBackground(true);
-      } else if (background.type === 'image') {
+      } else if (background?.type === 'image') {
         // Using real image file
         console.log('[Splash] Using image:', background.filename);
         setSelectedAsset(background);
@@ -152,7 +152,7 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
       }
 
       // Optional: Try to get a video too
-      const video = await window.electronAPI.invoke('media:getRandomVideo');
+      const video = await window.electronAPI.invoke('media:getRandomVideo') as MediaAsset | null;
       if (video) {
         console.log('[Splash] Video available:', video.filename);
         // Could switch to video instead of image if preferred

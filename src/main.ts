@@ -6,9 +6,9 @@
  * Native modules are loaded with graceful fallbacks for development flexibility.
  */
 
-import { app, BrowserWindow, ipcMain, Menu, globalShortcut, dialog, Tray, nativeImage } from 'electron';
+import { app, BrowserWindow, ipcMain, Menu, globalShortcut, dialog, Tray, nativeImage, protocol, net } from 'electron';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import fs from 'fs';
 
 // ESM compatibility
@@ -391,7 +391,47 @@ function createWindow(): void {
     show: false, // Show after ready
   });
 
-  // Load the app
+  // Register protocol handler on the window's session BEFORE loading content
+  // This ensures CSS background-image requests can use ninja-art:// protocol
+  mainWindow.webContents.session.protocol.handle('ninja-art', async (request) => {
+    try {
+      // URL format: ninja-art://images/filename.jpg or ninja-art://videos/filename.mp4
+      const url = new URL(request.url);
+      const type = url.hostname; // "images" or "videos"
+      const filename = decodeURIComponent(url.pathname.slice(1)); // Remove leading /
+
+      // Build file path - different in dev vs production
+      // In dev: art/ is in project root (process.cwd())
+      // In production: art/ is in resources folder
+      let artBasePath: string;
+      if (app.isPackaged) {
+        // Production: look in resources folder
+        artBasePath = path.join(process.resourcesPath, 'art');
+      } else {
+        // Development: look in project root
+        artBasePath = path.join(process.cwd(), 'art');
+      }
+
+      const filePath = path.join(artBasePath, type, filename);
+
+      console.log('[Main] Session protocol request:', request.url, '->', filePath);
+
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        console.error('[Main] Protocol file not found:', filePath);
+        return new Response('File not found', { status: 404 });
+      }
+
+      // Return the file using net.fetch with file:// protocol
+      return net.fetch(pathToFileURL(filePath).href);
+    } catch (error: any) {
+      console.error('[Main] Protocol handler error:', error.message);
+      return new Response('Internal error', { status: 500 });
+    }
+  });
+  console.log('[Main] Session protocol handler registered for main window');
+
+  // Load the app AFTER protocol handler is registered
   // In development, Forge serves the renderer via Vite dev server
   // In production, load from the built files
   if (process.env.NODE_ENV === 'development' || process.env.VITE_DEV_SERVER_URL) {
@@ -1201,11 +1241,34 @@ function registerHotkeys(): void {
 }
 
 // ============================================================================
+// CUSTOM PROTOCOL FOR ART FILES
+// ============================================================================
+
+// Register custom protocol scheme before app is ready
+// corsEnabled is required for CSS background-image to load from custom protocols
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'ninja-art',
+    privileges: {
+      secure: true,
+      standard: true,
+      supportFetchAPI: true,
+      stream: true,
+      corsEnabled: true,
+      bypassCSP: true, // Allow bypassing Content Security Policy
+    },
+  },
+]);
+
+// ============================================================================
 // APPLICATION LIFECYCLE
 // ============================================================================
 
 app.whenReady().then(() => {
   console.log('[Main] Ninja Toolkit v11 starting...');
+
+  // Note: Protocol handler for ninja-art:// is registered on each window's session
+  // in createWindow() to avoid conflicts
 
   // Show splash screen first
   createSplashWindow();
